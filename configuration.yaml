@@ -1,0 +1,115 @@
+homeassistant:
+  latitude: !secret latitude
+  longitude: !secret longitude
+  elevation: 311
+  # Customization file
+  customize: !include customize.yaml
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+frontend:
+  themes: !include_dir_merge_named themes/
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+#http:
+#  base_url:
+
+# Discover some devices automatically
+discovery:
+hassio:
+# Sensors
+sensor: !include sensors.yaml
+
+#RFlink
+rflink:
+  host: 192.168.15.253
+  port: 6000
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+light: !include lights.yaml
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+#Media Players
+media_player: !include media_players.yaml
+
+#Binary sensors
+binary_sensor: !include binary_sensors.yaml
+
+#Speedtest
+speedtestdotnet:
+  scan_interval:
+    minutes: 30
+  monitored_conditions:
+    - ping
+    - download
+    - upload
+
+#Digital Ocean
+digital_ocean:
+  access_token: !secret digital_ocean_api
+
+#Influxdb
+influxdb:
+  host: localhost
+  port: 8086
+  database: homeassistant
+  username: !secret influxdb_username
+  password: !secret influxdb_password
+  max_retries: 3
+  default_measurement: state
+
+#Google Calendar
+#google:
+#  client_id: !secret google_calendar_client_id
+#  client_secret: !secret google_calendar_client_secret
+
+#WebosTV
+webostv:
+  - host: 192.168.15.201
+    name: Vardagrsum TV
+    turn_on_action:
+      service: wake_on_lan.send_magic_packet
+      data:
+        mac: 3C:CD:93:ED:7C:4F
+    customize:
+      sources:
+        - LiveTV
+        - Netflix
+        - Onkyo
+        - YouTube
+
+#Trakt
+#trakt:
+#  client_id: !secret trakt_id
+#  client_secret: !secret trakt_secret
+
+#Spotify to chromecast
+#spotcast:
+#  username: !secret spotify_username
+#  password: !secret spotify_password
+
+#Spotify
+#spotify:
+#  client_id: !secret spotify_client_id
+#  client_secret: !secret spotify_client_secret
+#Debug
+logger:
+  default: info
+  #logs:
+  #rflink: debug
+  #homeassistant.components.rflink: debug
+#switch: !include switch.yaml
+#Automatic git push of config
+switch:
+  platform: command_line
+  switches:
+    home_assistant_git_push:
+      command_on: "git commit -am 'Daily commit' --quiet  && git push --quiet"
+#hacs:
+#  token: !secret hacs_github_access_token

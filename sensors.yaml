@@ -1,0 +1,134 @@
+#YR weather sensor
+#  - platform: yr
+#    monitored_conditions:
+#      - temperature
+#      - symbol
+#      - windSpeed
+#      - windDirection
+#      - humidity
+#      - fog
+#      - cloudiness
+#      - lowClouds
+#      - mediumClouds
+#      - highClouds
+#      - dewpointTemperature
+
+#Actual rflink sensors
+- platform: rflink
+  devices:
+    oregontemphygro_228ec_temp:
+      sensor_type: temperature
+    oregontemphygro_228ec_hum:
+      sensor_type: humidity
+    oregontemphygro_228ec_bat:
+      sensor_type: battery
+  automatic_add: true
+
+#  - platform: vasttrafik
+#    key: !secret vasttrafik_key
+#    secret: !secret vasttrafik_secret
+#    departures:
+#      - from: Borås Resecentrum
+#        name: Mot Göteborg
+#        heading: Korsvägen
+
+#Pollen nivå
+- platform: pollenniva
+  scan_interval: 4
+  sensors:
+    - city: Göteborg
+      days_to_track: 3
+      allergens:
+        - Hassel
+        - Gräs
+        - Alm
+        - Björk
+        - Bok
+        - Ek
+        - Gråbo
+    - city: Jönköping
+      days_to_track: 3
+      allergens:
+        - Hassel
+        - Gräs
+        - Alm
+        - Björk
+        - Bok
+        - Ek
+        - Gråbo
+
+#HarmonyHub
+- platform: template
+  sensors:
+    vardagsrum:
+      value_template: "{{ states.remote.vardagsrumtv.attributes.current_activity }}"
+      friendly_name: "Vardagsrum HarmonyHub"
+
+#IP-dns
+# Own public IPv4 address
+#  - platform: dnsip
+# Resolve IP address of home-assistant.io via Google DNS
+#  - platform: dnsip
+#    hostname: !secret hostname
+#    name: hass
+
+#System
+- platform: systemmonitor
+  resources:
+    - type: disk_use_percent
+      arg: /
+    - type: memory_free
+    - type: processor_use
+    - type: last_boot
+
+#Unifi security gateway
+#  - platform: unifigateway
+#    host: !secret unifi_host
+#    username: !secret unifi_username
+#    password: !secret unifi_password
+#   site_id: !secret unifi_site_id
+#    monitored_conditions:
+#      - www
+#      - wlan
+#      - alerts
+#      - firmware
+#      - vpn
+#      - lan
+
+#Trakt upcoming
+#  - platform: trakt
+#    id: !secret trakt_id
+#    secret: !secret trakt_secret
+#    username: !secret trakt_username
+#    days: 30
+
+#Krisinfo
+- platform: krisinformation
+  name: "Krisinformation Borås"
+  county: "Västra Götalands län"
+  latitude: !secret latitude
+  longitude: !secret longitude
+  radius: 200
+
+#Here travel time
+# Tracking entity to entity
+- platform: here_travel_time
+  api_key: !secret here_api_key
+  name: Samuel hem
+  origin_entity_id: person.samuel_sjobergsson
+  destination_entity_id: zone.home
+  mode: car
+  route_mode: fastest
+  traffic_mode: true
+  unit_system: metric
+
+# Tracking entity to entity
+- platform: here_travel_time
+  api_key: !secret here_api_key
+  name: Samuel till jobb
+  origin_entity_id: person.samuel_sjobergsson
+  destination_entity_id: zone.jobb
+  mode: car
+  route_mode: fastest
+  traffic_mode: true
+  unit_system: metric

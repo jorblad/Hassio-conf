@@ -1,0 +1,104 @@
+- id: be1d18d8050e40b794bd8e5adc89fe9d
+  alias: light on at sunset
+  trigger:
+  - event: sunset
+    offset: -00:45:00
+    platform: sun
+  condition:
+  - before: '21:00'
+    condition: time
+  action:
+  - alias: ''
+    data:
+      entity_id: scene.lights_at_dark
+    service: homeassistant.turn_on
+- id: e069721d12524a4b98ac78409a93af01
+  alias: light off at sunrise
+  trigger:
+  - event: sunrise
+    offset: 00:20:00
+    platform: sun
+  action:
+  - data:
+      entity_id: group.window
+    entity_id: scene.lights_at_sunrise
+    service: homeassistant.turn_off
+- id: 08033fc3b435464389dac76d900a86da
+  alias: light on in monday morning
+  trigger:
+  - at: 04:00:00
+    platform: time
+  condition:
+  - condition: and
+    conditions:
+    - condition: time
+      weekday:
+      - mon
+  action:
+  - entity_id: scene.morgon_2
+    service: scene.turn_on
+- id: d9b06da7fd6b4f3b97ef4296ee672316
+  alias: light on in weekday morning
+  trigger:
+  - at: 04:40:00
+    platform: time
+  condition:
+  - condition: state
+    entity_id: binary_sensor.workday_sensor
+    state: 'on'
+  action:
+  - entity_id: scene.morgon_2
+    service: scene.turn_on
+- id: 4c8aa6175c9043318ffe52c374ea8e91
+  alias: Update OpenUV every 30 minutes during the daytime
+  trigger:
+  - hours: /1
+    platform: time_pattern
+  condition:
+  - after: sunrise
+    before: sunset
+    condition: sun
+  action:
+  - service: openuv.update_uv_index_data
+  - data: {}
+    service: openuv.update_protection_data
+- id: '1558348853012'
+  alias: Lights off when not home
+  trigger:
+  - at: '22:00'
+    platform: time
+  condition:
+  - condition: state
+    entity_id: person.samuel_sjobergsson
+    state: not_home
+  action:
+  - data:
+      entity_id: group.window
+    service: light.turn_off
+- id: '1559911216570'
+  alias: NightlyBackup
+  trigger:
+  - at: 02:32:00
+    platform: time
+  condition: []
+  action:
+  - service: hassio.snapshot_full
+  - data:
+      entity: home_assistant_git_push
+    service: switch.turn_on
+- id: '1576758705620'
+  alias: LightOnWhenHome
+  description: ''
+  trigger:
+  - event: enter
+    platform: geo_location
+    source: person.samuel_sjobergsson
+    zone: zone.home
+  condition:
+  - after: sunset
+    before: sunrise
+    condition: sun
+  action:
+  - data: {}
+    entity_id: scene.windowlightson
+    service: scene.turn_on

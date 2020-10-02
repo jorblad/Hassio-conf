@@ -1,0 +1,1 @@
+Min konfiguration för homeassistant använder sig av en del custom lovelace card.

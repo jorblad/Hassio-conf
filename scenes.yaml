@@ -1,0 +1,70 @@
+- name: lights_at_dark
+  entities:
+    group.window:
+      state: true
+  id: 63330fda9a984a66923a4c63bd535304
+- name: lights_at_sunrise
+  entities:
+    group.window:
+      state: false
+  id: 86c74c05bff5435fb96cfe65ed136a03
+- id: '1581593190760'
+  name: Morgon
+  entities:
+    group.window:
+      entity_id:
+      - light.vardagrsum_fonster_mot_balkong
+      - light.vardagsrum_fonster_mot_allingsasvagen
+      - light.kok_fonster
+      - light.sovrum_fonster
+      friendly_name: Fönsterlampor
+      icon: mdi:account-multiple
+      order: 0
+      state: 'on'
+- id: '1581593424235'
+  name: Natt
+  entities:
+    group.window:
+      entity_id:
+      - light.vardagrsum_fonster_mot_balkong
+      - light.vardagsrum_fonster_mot_allingsasvagen
+      - light.kok_fonster
+      - light.sovrum_fonster
+      friendly_name: Fönsterlampor
+      icon: mdi:account-multiple
+      order: 0
+      state: 'off'
+    media_player.spotify_samuel_sjobergsson:
+      entity_picture: /api/media_player_proxy/media_player.spotify_samuel_sjobergsson?token=bf919acd574f8ab6343c6f41743d7cd21a07de4c73dafd02425ef7ed57e94d4a&cache=332e47190f040b97
+      friendly_name: Spotify Samuel Sjöbergsson
+      icon: mdi:spotify
+      media_album_name: Möt oss här (Davids Hjärta 68)
+      media_artist: Josefina Gniste
+      media_content_id: O prisa högt
+      media_content_type: music
+      media_duration: 306.493
+      media_playlist: Prisa - En lovsångskväll
+      media_position: 19.349
+      media_position_updated_at: '2020-02-13T11:30:00.111000+00:00'
+      media_title: O prisa högt
+      media_track: 4
+      shuffle: true
+      source: MS101224
+      source_list:
+      - MS101224
+      state: paused
+      supported_features: 51767
+      volume_level: 0.49
+- id: '1582322240299'
+  name: WindowLightsOn
+  entities:
+    group.window:
+      entity_id:
+      - light.vardagrsum_fonster_mot_balkong
+      - light.vardagsrum_fonster_mot_allingsasvagen
+      - light.kok_fonster
+      - light.sovrum_fonster
+      friendly_name: Fönsterlampor
+      icon: mdi:account-multiple
+      order: 0
+      state: 'on'

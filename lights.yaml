@@ -1,0 +1,15 @@
+  - platform: rflink
+    automatic_add: true
+    devices:
+      newkaku_01718f56_10:
+        name: Vardagrsum fönster mot balkong
+      newkaku_0171856_e:
+        name: Lampa 1
+      newkaku_0171856_f:
+        name: Lampa 2
+      newkaku_01318b56_f:
+        name: Kök fönster
+      newkaku_01318b56_10:
+        name: Sovrum fönster
+      newkaku_01318b56_e:
+        name: Vardagsrum fönster mot allingsåsvägen

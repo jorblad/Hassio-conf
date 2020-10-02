@@ -1,0 +1,19 @@
+##IP admin
+#Ping
+- platform: ping
+  host: 8.8.8.8
+  name: Google
+- platform: ping
+  host: 192.168.210.30
+  name: Freenas
+
+#Digital ocean
+- platform: digital_ocean
+  droplets:
+    - "asweb-cust1"
+    - "jm-cust2"
+#Workdays
+- platform: workday
+  country: SE
+  workdays: [mon, tue, wed, thu, fri]
+  excludes: [sat, sun, holiday]
