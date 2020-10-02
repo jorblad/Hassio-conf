@@ -102,3 +102,17 @@
   - data: {}
     entity_id: scene.windowlightson
     service: scene.turn_on
+- id: '1601629157633'
+  alias: Backup-everyday
+  description: ''
+  trigger:
+  - platform: time
+    at: 04:00
+  condition: []
+  action:
+  - service: hassio.addon_stdin
+    data:
+      addon: 7be23ff5_dropbox_sync
+      input:
+        command: upload
+  mode: single
