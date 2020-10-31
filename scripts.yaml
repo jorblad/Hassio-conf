@@ -1,0 +1,14 @@
+home_leave:
+  alias: Lämnar hemmet
+  sequence:
+  - service: light.turn_off
+    data: {}
+    entity_id: light.office_wall_lights
+  mode: single
+home_arrive:
+  alias: Kommer hem
+  sequence:
+  - service: light.turn_on
+    data: {}
+    entity_id: light.office_wall_lights
+  mode: single

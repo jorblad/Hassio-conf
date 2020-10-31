@@ -1,70 +1,139 @@
-- name: lights_at_dark
+- id: 63330fda9a984a66923a4c63bd535304
+  name: lights_at_dark
   entities:
-    group.window:
-      state: true
-  id: 63330fda9a984a66923a4c63bd535304
-- name: lights_at_sunrise
-  entities:
-    group.window:
-      state: false
-  id: 86c74c05bff5435fb96cfe65ed136a03
-- id: '1581593190760'
-  name: Morgon
-  entities:
-    group.window:
+    light.upstairs_lights:
+      min_mireds: 250
+      max_mireds: 454
+      brightness: 173
+      color_temp: 370
       entity_id:
-      - light.vardagrsum_fonster_mot_balkong
-      - light.vardagsrum_fonster_mot_allingsasvagen
-      - light.kok_fonster
-      - light.sovrum_fonster
-      friendly_name: Fönsterlampor
-      icon: mdi:account-multiple
-      order: 0
+      - light.bedroom_lamp_samuel
+      - light.office_wall_lights
+      - light.tv_room_towards_stairs
+      friendly_name: Upstairs lights
+      supported_features: 35
+      state: 'on'
+    light.downstairs_lights:
+      min_mireds: 250
+      max_mireds: 454
+      brightness: 177
+      color_temp: 370
+      entity_id:
+      - light.living_room_front
+      - light.living_room_side
+      - light.kitchen_window
+      friendly_name: Downstairs lights
+      supported_features: 35
+      state: 'on'
+- id: 86c74c05bff5435fb96cfe65ed136a03
+  name: lights_at_sunrise
+  entities:
+    light.upstairs_lights:
+      min_mireds: 250
+      max_mireds: 454
+      entity_id:
+      - light.bedroom_lamp_samuel
+      - light.office_wall_lights
+      - light.tv_room_towards_stairs
+      friendly_name: Upstairs lights
+      supported_features: 35
+      state: 'off'
+    light.downstairs_lights:
+      min_mireds: 250
+      max_mireds: 454
+      entity_id:
+      - light.living_room_front
+      - light.living_room_side
+      - light.kitchen_window
+      friendly_name: Downstairs lights
+      supported_features: 35
+      state: 'off'
+- id: '1581593190760'
+  name: Morning
+  entities:
+    input_boolean.zzz_helpers_samuels_alarm_triggered_today:
+      editable: true
+      friendly_name: '[zzz-Helpers] Samuels alarm triggered today'
+      icon: mdi:alarm-snooze
+      state: 'on'
+    light.bedroom_lamp_samuel:
+      min_mireds: 250
+      max_mireds: 454
+      brightness: 180
+      color_temp: 370
+      friendly_name: Bedroom lamp Samuel
+      supported_features: 35
       state: 'on'
 - id: '1581593424235'
   name: Natt
   entities:
-    group.window:
-      entity_id:
-      - light.vardagrsum_fonster_mot_balkong
-      - light.vardagsrum_fonster_mot_allingsasvagen
-      - light.kok_fonster
-      - light.sovrum_fonster
-      friendly_name: Fönsterlampor
-      icon: mdi:account-multiple
-      order: 0
-      state: 'off'
     media_player.spotify_samuel_sjobergsson:
-      entity_picture: /api/media_player_proxy/media_player.spotify_samuel_sjobergsson?token=bf919acd574f8ab6343c6f41743d7cd21a07de4c73dafd02425ef7ed57e94d4a&cache=332e47190f040b97
-      friendly_name: Spotify Samuel Sjöbergsson
-      icon: mdi:spotify
-      media_album_name: Möt oss här (Davids Hjärta 68)
-      media_artist: Josefina Gniste
-      media_content_id: O prisa högt
-      media_content_type: music
-      media_duration: 306.493
-      media_playlist: Prisa - En lovsångskväll
-      media_position: 19.349
-      media_position_updated_at: '2020-02-13T11:30:00.111000+00:00'
-      media_title: O prisa högt
-      media_track: 4
-      shuffle: true
-      source: MS101224
       source_list:
       - MS101224
-      state: paused
-      supported_features: 51767
-      volume_level: 0.49
+      - Samuels-MacbookPro
+      volume_level: 1
+      media_content_id: spotify:track:0EvNeNmHtBJp3bBKZZe0fx
+      media_content_type: music
+      media_duration: 199.293
+      media_position: 4.738
+      media_position_updated_at: '2020-10-30T07:12:28.512000+00:00'
+      media_title: No Place Like You
+      media_artist: Maddie & Tae
+      media_album_name: Start Here (Deluxe Edition)
+      media_track: 9
+      source: MS101224
+      shuffle: true
+      friendly_name: Spotify Samuel Sjöbergsson
+      icon: mdi:spotify
+      entity_picture: /api/media_player_proxy/media_player.spotify_samuel_sjobergsson?token=7a30c8e9f3ac9fea3aae33ed6c5c0a68639f8057061d4c6e307933b722dbf876&cache=ebea738d91353157
+      supported_features: 182839
+      state: playing
+    remote.harmony_hub:
+      activity_starting:
+      current_activity: PowerOff
+      activity_list:
+      - Listen to Radio
+      - Watch a DVD/Bluray
+      - Listen to Music
+      - Watch Smart TV
+      - Spela dator
+      - Watch TV
+      devices_list:
+      - LG TV
+      - Arris DVR
+      - Onkyo AV Receiver
+      - Windows Computer
+      - Panasonic DVD
+      last_activity: Watch Smart TV
+      friendly_name: Harmony Hub
+      supported_features: 0
+      state: 'off'
+    light.bedroom_lamp_samuel:
+      min_mireds: 250
+      max_mireds: 454
+      friendly_name: Bedroom lamp Samuel
+      supported_features: 35
+      state: 'off'
+    light.tv_room_towards_stairs:
+      friendly_name: TV-room towards stairs
+      supported_features: 0
+      state: 'off'
 - id: '1582322240299'
   name: WindowLightsOn
   entities:
-    group.window:
+    light.upstairs_lights:
+      brightness: 255
       entity_id:
-      - light.vardagrsum_fonster_mot_balkong
-      - light.vardagsrum_fonster_mot_allingsasvagen
-      - light.kok_fonster
       - light.sovrum_fonster
-      friendly_name: Fönsterlampor
-      icon: mdi:account-multiple
-      order: 0
+      friendly_name: Upstairs lights
+      supported_features: 1
+      state: 'on'
+    light.downstairs_lights:
+      brightness: 255
+      entity_id:
+      - light.kok_fonster
+      - light.vardagrsum_fonster_framsida
+      - light.vardagsrum_fonster_kortsida
+      friendly_name: Downstairs lights
+      supported_features: 1
       state: 'on'

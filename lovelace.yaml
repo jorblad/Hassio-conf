@@ -1,0 +1,711 @@
+##########################################################################
+#                                                                        #
+#                              * SETTINGS *                              #
+#                                                                        #
+##########################################################################
+
+preload_cards: [map, iframe, markdown]
+preload_rows: [input-select-entity]
+
+anchors:
+  ⚓₁: &title
+    entity: sensor.placeholder
+    tap_action:
+      action: none
+    hold_action:
+      action: none
+    type: state-label
+  ⚓₂: &title-style
+    color: "#bcbebf"
+    font-family: SF Text
+    font-size: 2.4vw
+    font-weight: 500
+    max-width: 1px
+    cursor: default
+
+button_card_templates: !include button_card_templates.yaml
+
+##########################################################################
+#                                                                        #
+#                              * LOVELACE *                              #
+#                                                                        #
+##########################################################################
+
+title: Hemma
+views:
+  - panel: true
+    path: default_view
+    cards:
+      - type: picture-elements
+        image: /local/background.png
+        elements:
+          # markdown fix
+          - type: custom:hui-element
+            card_type: markdown
+            style: { opacity: 0 }
+            content: preload
+
+          #################################################
+          #                                               #
+          #                   COVID-19                    #
+          #                                               #
+          #################################################
+
+          - type: custom:hui-markdown-card
+            class: coronavirus
+            style: { top: 93.65%, left: 70.2% }
+            content: >
+              {% if is_state('sensor.covid_19_folkhalsomyndigheten', 'Tillgänglig') %}
+                {% set data = state_attr('sensor.covid_19_folkhalsomyndigheten', 'embedCode') %}
+                {% set total = data | regex_findall_index('Totalt[^,]*?(\d+)[^,]*?(\d+)[^,]*?(\d+)') | list %}
+                {% set break = ' ‍ ‍ ‍ ‍ ‍ ‍<font color="#2f3436">|</font> ‍ ‍ ‍ ‍ ‍ ‍' %}
+                <font color='#6a7377'>
+                <ha-icon icon="mdi:virus"></ha-icon> <b>Coronavirus</b>{{ break -}}
+                <ha-icon icon="mdi:chart-bar"></ha-icon> <b>{{ ((total[0] | int / 10327589) * 100) | round(2) }}%</b> av Sverige{{ break -}}
+                <ha-icon icon="mdi:emoticon-sad"></ha-icon> <b>{{ total[0] }}</b> fall{{ break -}}
+                <ha-icon icon="mdi:grave-stone"></ha-icon> <b>{{ total[2] }}</b> avlidna{{ break -}}
+                <ha-icon icon="mdi:map-marker-radius"></ha-icon> <b>{{ data | regex_findall_index('Västra Götaland[^,]*?(\d+)') }}</b> fall i Västra Götaland
+                </font>
+              {% endif %}
+
+          ##########################################################################
+          #                                                                        #
+          #                              * SIDEBAR *                               #
+          #                                                                        #
+          ##########################################################################
+
+          - type: image
+            image: local/sidebar.png
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              {
+                top: 50%,
+                left: 10.6%,
+                width: 21.5%,
+                pointer-events: none,
+                border-right: "1.5px solid rgba(58,69,73,0.2)",
+              }
+
+          #################################################
+          #                                               #
+          #                   MARKDOWN                    #
+          #                                               #
+          #################################################
+
+          - type: custom:hui-markdown-card
+            class: sidebar
+            style: { top: 9%, left: 11.1% }
+            content: >
+              <span>{{ states('sensor.time') }}</span>
+
+
+              <font color='#6a7377'><b>{{ states('sensor.sidebar_day') }}</b><br>
+              <b>{{ states('sensor.sidebar_date') }}</b> </font><br> 
+
+
+              <b>{{ states('sensor.sidebar_greeting') }}</b>
+
+
+              <b>{{ states('sensor.sidebar_active') }}</b>
+
+
+              {{ states('sensor.sidebar_weather') }}
+
+
+              {% if is_state('binary_sensor.plex_availability', 'off') %}
+              {{'\u26A0\uFE0F'}} Plex är nere...{% endif %}
+
+
+              {% if is_state('binary_sensor.google', 'off') %}
+              {{'\u26A0\uFE0F'}} Kontrollera internetåtkomst{% endif %}
+              </font>
+
+          #################################################
+          #                                               #
+          #                KRISINFORMATION                #
+          #                                               #
+          #################################################
+
+          - type: conditional
+            conditions:
+              - entity: input_boolean.krisinformation_visibility
+                state: "on"
+            elements:
+              - type: custom:stack-in-card
+                class: krisinformation
+                style:
+                  {
+                    top: 18%,
+                    left: 10.7%,
+                    height: 1px,
+                    max-height: 4vw,
+                    width: 17.5vw,
+                  }
+                cards:
+                  - type: custom:hui-element
+                    card_type: markdown
+                    style: "ha-card {padding: 0.6vw;}"
+                    content: >
+                      {% set entity_id = 'sensor.krisinformation_boras' %}
+                      {% if not is_state_attr(entity_id, 'messages', []) %}
+                        {{'\u26A0\uFE0F'}} <b>Krisinformation</b><br>
+                        {{ as_timestamp(state_attr(entity_id, 
+                        'messages')[0]["Published"]) | timestamp_custom('%Y-%m-%d') }}. {{ state_attr(entity_id, 
+                        'messages')[0]["Message"] | truncate(280, True, '...', 0) }}
+                      {% endif %}
+
+                  - type: custom:button-card
+                    show_label: true
+                    label: OK
+                    tap_action:
+                      action: call-service
+                      service: input_boolean.turn_off
+                      service_data:
+                        entity_id: input_boolean.krisinformation_visibility
+                    styles:
+                      label:
+                        [
+                          font-size: 1.5vw,
+                          background: "#FFFFFF15",
+                          border-radius: 0.6vw,
+                          font-weight: 500,
+                          letter-spacing: 0.09vw,
+                          opacity: 0.65,
+                          padding: 0.7vw 1vw 0.8vw 1vw,
+                          font-family: SF Display,
+                        ]
+                      card:
+                        [
+                          width: 4.5vw,
+                          height: 6vw,
+                          margin-top: -0.5vw,
+                          padding-bottom: 1vw,
+                          margin-left: 138%,
+                          --mdc-ripple-press-opacity: 0,
+                        ]
+
+          #################################################
+          #                                               #
+          #                  INFO BUTTON                  #
+          #                                               #
+          #################################################
+
+          - type: icon
+            icon: mdi:information-outline
+            title: Information
+            style:
+              top: 87.41%
+              left: 10.7%
+              color: rgb(255, 255, 255)
+              opacity: 0.1
+              padding: 0.8vw
+              --mdc-icon-size: 4vw
+            tap_action: !include popup/sidebar_information.yaml
+
+          #################################################
+          #                                               #
+          #                UPDATES BUTTON                 #
+          #                                               #
+          #################################################
+
+          - type: icon
+            icon: mdi:arrow-up-bold-circle-outline
+            title: Uppdateringar
+            style:
+              top: 87.41%
+              left: 16.55%
+              color: rgb(255, 255, 255)
+              opacity: 0.1
+              padding: 0.8vw
+              --mdc-icon-size: 4vw
+            tap_action: !include popup/sidebar_update.yaml
+
+          ##########################################################################
+          #                                                                        #
+          #                             * VARDAGSRUM *                             #
+          #                                                                        #
+          ##########################################################################
+
+          - prefix: Vardagsrum
+            <<: *title
+            style:
+              top: 9.15%
+              left: 25.4%
+              <<: *title-style
+
+          #################################################
+          #                                               #
+          #                   BELYSNING                   #
+          #                                               #
+          #################################################
+
+          - type: custom:button-card
+            entity: light.living_room_lights
+            style:
+              top: 20.35%
+              left: 30.31%
+              width: 10%
+            custom_fields:
+              icon_lamp: &icon_lamp >
+                [[[ const state = entity.state === 'on' ? 'animate' : null; 
+                return `<svg viewBox="0 0 50 50"><style>@keyframes animate{0%{transform: scale(0.85);}20%{transform: scale(1.1);}40%{transform: scale(0.95);}60%{transform: scale(1.03);}80%{transform: scale(0.97);}}.animate{animation: animate 0.8s; transform-origin: center;}</style>
+                <path fill="#9da0a2" d="M26.5 21.8l3.8-6.1H19.7l3.8 6.1c-5 .7-6.3 5.8-5.7 10.2.7 5.1 3.2 10.1 5.7 14.4H19v2.5h11.8v-2.5h-4.5C29 42 31.4 37 32.1 32c.6-4.4-.6-9.4-5.6-10.2zm3.1 9.1c-.3 4.3-2.3 8.7-4.4 12.4l-.2.1v.1-.1c-1.8-3-3.3-6.4-4.1-9.7-.7-3.1-1-7.2 2.7-8.4 1.4-.5 3.1-.1 4.2.8 1.6 1 1.8 3 1.8 4.8z"/>
+                <path class="${state}" fill="var(--button-card-light-color-no-temperature)" d="M38.1 20L35.7 3.8c-.3-1.9-.4-1.7-.6-2-.9-.6-2.3-.7-2.3-.7H17.4s-1.4 0-2.3.7c-.2.3-.3.1-.6 2C14 5.7 11.9 20 11.9 20s5.8.3 13.4.3h0c7.3 0 12.8-.3 12.8-.3z"/> </svg>`;]]]
+            styles: &icon_lamp_styles
+              custom_fields:
+                icon_lamp:
+                  [top: 11%, left: 4.5%, width: 3.05vw, position: absolute]
+            template: light
+
+          #################################################
+          #                                               #
+          #                   SYBORD                      #
+          #                                               #
+          #################################################
+
+          #- type: custom:button-card
+          #entity: light.office_wall_lights
+          #name: Sybord
+          #style:
+          #top: 20.35%
+          #left: 41.31%
+          #width: 10%
+          #custom_fields:
+          #icon_shade: >
+          #[[[ const state = entity.state === 'on' ? 'animate' : null;
+          #return `<svg viewBox="0 0 50 50"><style>@keyframes animate{0%{transform: scale(0.85);}20%{transform: scale(1.1);}40%{transform: scale(0.95);}60%{transform: scale(1.03);}80%{transform: scale(0.97);}100%{transform: scale(1);}}.animate{animation: animate 0.8s; transform-origin: center;}</style>
+          #<path fill="#9da0a2" d="M26.4 25.6c.6-.3 1.1-.7 1.1-1.3L25 17.9l-2.5 6.4c0 .7.6 1.1 1.1 1.3v20.8h-5.5v2.7h13.7v-2.7h-5.5V25.6z"/>
+          #<path class="${state}" fill="var(--button-card-light-color-no-temperature)" d="M24.6.9l-9.4.5c-.6.1-1.9 0-2.5 2.1s-2.4 9.1-4 16.9c-.2.7-.5 2-.5 2.3s-.4 1.6.9 1.6c.8.1 7.4.3 15.9.3 8.6 0 15.1-.3 15.9-.3 1.3-.1.9-1.3.9-1.6s-.3-1.6-.5-2.3c-1.6-7.8-3.4-14.8-4-16.9s-1.9-2-2.5-2.1c-1.6-.2-6.9-.4-9.4-.5"/> </svg>`;]]]
+          #styles:
+          #custom_fields:
+          #icon_shade:
+          #[top: 11%, left: 4.6%, width: 3.05vw, position: absolute]
+          #template: light
+
+          ##########################################################################
+          #                                                                        #
+          #                             * KÖK *                                    #
+          #                                                                        #
+          ##########################################################################
+
+          - prefix: Kök
+            <<: *title
+            style:
+              top: 9.15%
+              left: 50.2%
+              <<: *title-style
+
+          #################################################
+          #                                               #
+          #                   BELYSNING                   #
+          #                                               #
+          #################################################
+
+          - type: custom:button-card
+            entity: light.kitchen_room_lights
+            style:
+              top: 20.35%
+              left: 55.18%
+              width: 10%
+            custom_fields:
+              icon_lamp: *icon_lamp
+            styles: *icon_lamp_styles
+            template: light
+          ##########################################################################
+          #                                                                        #
+          #                               * SOVRUM *                               #
+          #                                                                        #
+          ##########################################################################
+
+          - prefix: Sovrum
+            <<: *title
+            style:
+              top: 9.15%
+              left: 75.1%
+              <<: *title-style
+
+          #################################################
+          #                                               #
+          #                  SÄNGLAMPOR                   #
+          #                                               #
+          #################################################
+
+          - type: custom:button-card
+            entity: light.bedroom_lamp_samuel
+            style:
+              top: 20.35%
+              left: 80.05%
+              width: 10%
+            custom_fields:
+              icon_lamp: *icon_lamp
+            styles: *icon_lamp_styles
+            template: light
+
+          ##########################################################################
+          #                                                                        #
+          #                               * MEDIA *                                #
+          #                                                                        #
+          ##########################################################################
+
+          - prefix: Media
+            <<: *title
+            style:
+              top: 53.4%
+              left: 25.4%
+              <<: *title-style
+
+          - type: custom:swipe-card
+            start_card: 1
+            parameters:
+              roundLengths: true
+              effect: coverflow
+              speed: 650
+              spaceBetween: 20
+              threshold: 7
+              coverflowEffect:
+                rotate: 80
+                depth: 300
+            style:
+              top: 56.55%
+              left: 35.8%
+              width: 20.97%
+              height: 1px
+              --ha-card-border-radius: .88vw
+            cards:
+              - type: picture-elements
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50' /%3E"
+                elements:
+                  #################################################
+                  #                                               #
+                  #              RECENTLY DOWNLOADED              #
+                  #                                               #
+                  #################################################
+
+                  - type: conditional
+                    conditions:
+                      - entity: input_select.conditional_media
+                        state: Senast nedladdat
+                    elements:
+                      - type: custom:button-card
+                        entity: sensor.plex_recently_added
+                        triggers_update: ["sensor.plex_recently_added"]
+                        name: Senast nedladdat
+                        state_display: >
+                          [[[ const data = states[entity.entity_id].attributes.data;
+                          const number = data[1].number == undefined ? '(' + data[1].aired.split('-')[0] + ')' : data[1].number;
+                          return `${data[1].title} ${number}`; ]]]
+                        custom_fields:
+                          icon: >
+                            <svg viewBox="0 0 50 50"><path d="M7.7.3h34.6c4.1 0 7.4 3.3 7.4 7.4v34.6c0 4.1-3.3 7.4-7.4 7.4H7.7c-4.1 0-7.4-3.3-7.4-7.4V7.7C.3 3.6 3.6.3 7.7.3z" fill="#282a2d"/><path d="M25,7.1H14.6L25,25L14.6,42.9H25L35.4,25L25,7.1z" fill="#e5a00d"/></svg>
+                          blur: >
+                            <svg viewBox="0 0 50 50" />
+                        styles:
+                          custom_fields:
+                            media_image:
+                              &plex_poster [
+                                background-position: center center,
+                                background-image: "[[[ return 'url(' + states[entity.entity_id].attributes.data[1].fanart + ')'; ]]]",
+                              ]
+                            blur: *plex_poster
+                            overlay: [background: "rgba(0, 0, 0, 0.4)"]
+                          card:
+                            [
+                              color: "#efefef",
+                              text-shadow: "1px 1px 5px rgba(18, 22, 23, 0.9)",
+                            ]
+                        tap_action:
+                          action: none
+                        style:
+                          top: 50%
+                          left: 50%
+                          width: 100%
+                        template: conditional_media
+
+                  #################################################
+                  #                                               #
+                  #               GOOGLE NEST MINI                #
+                  #                                               #
+                  #################################################
+
+                  - type: conditional
+                    conditions:
+                      - entity: input_select.conditional_media
+                        state: Master bedroom speaker
+                    elements:
+                      - type: custom:button-card
+                        entity: media_player.master_bedroom_speaker
+                        custom_fields:
+                          icon: &icon_nest_mini >
+                            <svg viewBox="0 0 50 50"><path d="M49.7 25c0 13.6-11.1 24.7-24.8 24.7C11.3 49.7.3 38.6.3 25S11.4.3 25 .3 49.7 11.4 49.7 25zm-33.9 0a2.22 2.22 0 0 0-2.2-2.2c-1.2 0-2.3 1-2.3 2.2a2.22 2.22 0 0 0 2.2 2.2c1.3.1 2.3-.9 2.3-2.2h0zm10.8 0c0 1.2.9 2.2 2.2 2.3 1.3 0 2.3-1 2.3-2.2 0-1.3-1-2.3-2.2-2.3-1.3 0-2.3.9-2.3 2.2zm-3.2 0a2.22 2.22 0 0 0-2.2-2.2c-1.2 0-2.3 1-2.3 2.2a2.22 2.22 0 0 0 2.2 2.2c1.3 0 2.3-.9 2.3-2.2h0zm13 2.2a2.22 2.22 0 0 0 2.2-2.2c0-1.2-1-2.3-2.2-2.3a2.22 2.22 0 0 0-2.2 2.2c0 1.3 1 2.3 2.2 2.3z" /></svg>
+                        style:
+                          top: 50%
+                          left: 50%
+                          width: 100%
+                        template: conditional_media
+                  - type: conditional
+                    conditions:
+                      - entity: input_select.conditional_media
+                        state: Spotify Samuel Sjöbergsson
+                    elements:
+                      - type: custom:button-card
+                        entity: media_player.spotify_samuel_sjobergsson
+                        custom_fields:
+                          icon: *icon_nest_mini
+                        style:
+                          top: 50%
+                          left: 50%
+                          width: 100%
+                        template: conditional_media
+                  - type: conditional
+                    conditions:
+                      - entity: input_select.conditional_media
+                        state: TV
+                    elements:
+                      - type: custom:button-card
+                        entity: media_player.tv
+                        custom_fields:
+                          icon: *icon_nest_mini
+                        style:
+                          top: 50%
+                          left: 50%
+                          width: 100%
+                        template: conditional_media
+
+                  #################################################
+                  #                                               #
+                  #           * SMALL MEDIA CONTROLS *            #
+                  #                                               #
+                  #################################################
+
+              - type: picture-elements
+                image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50' /%3E"
+                elements:
+                  # SMALL GOOGLE NEST MINI
+                  - type: custom:button-card
+                    entity: media_player.master_bedroom_speaker
+                    name: Master Bedroom Speaker
+                    custom_fields:
+                      icon: *icon_nest_mini
+                    style:
+                      top: 23.9%
+                      left: 23.8%
+                      width: 47.7%
+                    template: media
+
+                  # Spotify
+                  - type: custom:button-card
+                    entity: media_player.spotify_samuel_sjobergsson
+                    name: Spotify Samuel Sjöbergsson
+                    custom_fields:
+                      icon: *icon_nest_mini
+                    style:
+                      top: 23.9%
+                      left: 76.2%
+                      width: 47.7%
+                    template: media
+                  # TV
+                  - type: custom:button-card
+                    entity: media_player.tv
+                    name: TV
+                    custom_fields:
+                      icon: *icon_nest_mini
+                    style:
+                      top: 76.2%
+                      left: 23.8%
+                      width: 47.7%
+                    template: media
+
+          ##########################################################################
+          #                                                                        #
+          #                               * ÖVRIGT *                               #
+          #                                                                        #
+          ##########################################################################
+
+          - prefix: Övrigt
+            <<: *title
+            style:
+              top: 53.4%
+              left: 50.2%
+              <<: *title-style
+
+          #################################################
+          #                                               #
+          #                    BADRUM                     #
+          #                                               #
+          #################################################
+
+          #- type: custom:button-card
+          #entity: light.lampa_1
+          #style:
+          #top: 64.5%
+          #left: 55.18%
+          #width: 10%
+          #custom_fields:
+          #icon_bathroom: >
+          #[[[ const state = entity.state === 'on' ? 'animate_on' : 'animate_off';
+          #return `<svg viewBox="0 0 50 50" fill="var(--button-card-light-color-no-temperature)"><style>@keyframes animate_on{0%{transform: rotateZ(0deg) translate(0%, 0%);}100%{transform: rotateZ(-90deg) translate(-1.5%, 0%);}}@keyframes animate_off{0%{transform: rotateZ(-90deg) translate(-1.5%, 0%);}45%{transform: rotateZ(-40deg);}55%{transform: rotateZ(0deg);}65%{transform: rotateZ(-15deg);}75%{transform: rotateZ(0deg);}85%{transform: rotateZ(-5deg);}95%{transform: rotateZ(0deg);}}.animate_on{animation: animate_on 0.4s; animation-fill-mode: forwards; transform-origin: 45% 41%; transition-timing-function: cubic-bezier(0.85, 0, 0.15, 1);}.animate_off{animation: animate_off 1.05s linear; animation-delay: 0.05s; animation-fill-mode: both; transform-origin: 45% 41%;}</style>
+          #<path d="M12.9 1.2h2.5c1.6 0 2.9 1.3 2.9 2.9v18.6c0 1.4 1.1 2.5 2.4 2.5h20.5c.5 0 1 .4.9 1-.1 2.6-1.2 9.6-10.2 11v7.6c0 .2.2.4.4.4h1.5a1.58 1.58 0 0 1 1.6 1.6v.3a1.58 1.58 0 0 1-1.6 1.6H11a1.58 1.58 0 0 1-1.6-1.6v-.3a1.58 1.58 0 0 1 1.6-1.6h1.6c.2 0 .4-.2.4-.4v-7.6s-5.2-.3-5.2-5.9V4.2c0-1.6 1.3-2.9 2.9-2.9l2.2-.1c0 .1 0 0 0 0z"/><path class="${state}" d="M22.3 18.8h18.3a1.58 1.58 0 0 1 1.6 1.6v.6a1.58 1.58 0 0 1-1.6 1.6h-19c-.4 0-.7-.3-.8-.7v-2.3c0-.4.3-.7.7-.8h.8z"/></svg>`;]]]
+          #styles:
+          #custom_fields:
+          #icon_bathroom:
+          #[top: 11%, left: 6.5%, width: 3vw, position: absolute]
+          #template: light
+
+          #################################################
+          #                                               #
+          #                   GARDEROB                    #
+          #                                               #
+          #################################################
+
+          #- type: custom:button-card
+          #entity: light.lampa_2
+          #style:
+          #top: 82.1%
+          #left: 55.18%
+          #width: 10%
+          #custom_fields:
+          #icon_closet: >
+          #[[[ const state = entity.state === 'on' ? 'door' : 'door reverse'; const opacity = entity.state === 'on' ? 'room' : 'room reverse';
+          #return `<svg viewBox="0 0 50 50"> <style>.door{animation: door 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;}.room{animation: room 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;}.reverse{animation-direction: reverse;}@keyframes door{0%{transform: none; fill: #9da0a2;}100%{transform: skewY(10deg) translate(4.5%, -3.9%) scaleX(0.8); fill: #b68349;}}@keyframes room{0%{opacity: 0;}100%{opacity: 1;}}</style>
+          #<path class="${opacity}" d="M11.4,1.4h27.2v43.1H11.4V1.4z" fill="#bcbcbc"/><path class="${state}" d="M11.4 1.4v43.1h27.2V1.4H11.4zm23 23.4c0 1.1-.9 1.9-1.9 1.9h0c-1.1 0-1.9-.9-1.9-1.9V21c0-1.1.9-1.9 1.9-1.9h0c1.1 0 1.9.9 1.9 1.9v3.8z"/></svg>`; ]]]
+          #styles:
+          #custom_fields:
+          #icon_closet:
+          #[top: 11%, left: 4.1%, width: 3.2vw, position: absolute]
+          #template: light
+
+          #################################################
+          #                                               #
+          #                     HALL                      #
+          #                                               #
+          #################################################
+
+          #- type: custom:button-card
+          #entity: light.dining_room_wall_light
+          #style:
+          #top: 82.1%
+          #left: 66.14%
+          #width: 10%
+          #custom_fields:
+          #icon_spot: *icon_spot
+          #styles: *icon_spot_styles
+          #template: light
+
+          ##########################################################################
+          #                                                                        #
+          #                               * HEMMA *                                #
+          #                                                                        #
+          ##########################################################################
+
+          - prefix: Hemma
+            <<: *title
+            style:
+              top: 53.4%
+              left: 75.1%
+              <<: *title-style
+
+          #################################################
+          #                                               #
+          #                    Samuel                    #
+          #                                               #
+          #################################################
+
+          - type: custom:button-card
+            entity: person.samuel_sjobergsson
+            triggers_update: ["person.samuel_sjobergsson", "sensor.time"]
+            style:
+              top: 64.5%
+              left: 80.05%
+              width: 10%
+            tap_action: !include popup/hemma_samuel.yaml
+            hold_action: !include popup/hemma_samuel.yaml
+            template: person
+
+          #################################################
+          #                                               #
+          #                     SANJA                     #
+          #                                               #
+          #################################################
+
+          #- type: custom:button-card
+          #entity: person.sanja
+          #triggers_update: ["person.sanja", "sensor.time"]
+          #style:
+          #top: 64.5%
+          #left: 91.05%
+          #width: 10%
+          #tap_action: !include popup/hemma_sanja.yaml
+          #hold_action: !include popup/hemma_sanja.yaml
+          #template: person
+
+          #################################################
+          #                                               #
+          #                  STÄNG ALLT                   #
+          #                                               #
+          #################################################
+
+          - type: custom:button-card
+            entity: script.home_leave
+            state_display: Auto
+            style:
+              top: 82.1%
+              left: 80.05%
+              width: 10%
+            tap_action:
+              action: toggle
+            hold_action:
+              action: none
+            custom_fields:
+              icon_away: >
+                [[[ const state = entity.state === 'on' ? 'animate' : null;
+                return `<svg viewBox="0 0 50 50"><style>@keyframes animate{10%, 20%, 100%{transform: rotateZ(0deg);}30%, 50%, 70%{transform: rotateZ(7deg);}90%{transform: rotateZ(3deg);}40%, 60%, 80%{transform: rotateZ(-7deg);}}.animate{animation: animate 1.35s cubic-bezier(0.5, 1, 0.89, 1); animation-fill-mode: both; transform-origin: 70% 80%; animation-delay: 0s;}</style>
+                <path class="${state}" d="M32.1 18.4s.3-1.6.7-2.1c.3-.6.9-1.4 1.6-1.8.6-.4 1.1-.7 1.4-.7s.7-.1 1 .1.6.4.8 1.3l.3 2.7.1 2.4.2 4.1c0 .3.2 3.1.2 3.3s.2 2.7.2 3.2l-.1 2.5c.1 1.6.5 3.1-.2 4.6-.6 1.4-1.7 2.7-2.9 3.6-.5.4-1.9 1.3-2.9 1.7-1.1.5-2.2.8-3.3 1.1-.5.1-1.4.4-2.3.3s-1.8-.6-2.1-1l-1.6-2.3c-.6-.8-2.1-2.3-2.3-2.5l-2.7-2.8c-.2-.2-2.7-3.5-2.9-3.8l-3.1-4.7-1.8-3.2-1.5-2.8-.9-1.8c-.1-.2-.3-1.1-.2-1.4.3-1.2 1.4-1.4 2.3-.7.3.2.9 1 1.1 1.3s6.1 8.1 6.1 8.1c.2.3.7.3.9 0s-.1-.7-.2-.9c-.4-.6-8.3-11.5-8.3-11.5s-.6-.9-.7-1.1c-.3-1.1 0-2.3 1.1-2.7s1.9.3 2.6 1.1c.3.3 8.3 11.5 8.3 11.5.2.2.3.3.5.3.3 0 .5-.4.4-.7-.1-.2-.5-.9-.5-.9L11.8 9c-.6-1-.9-2-.1-3 .7-.8 2.2-1.3 3-.2.3.3 10.1 14.3 10.1 14.3.2.2.5.4.7.3.5-.1.3-.7.1-1-.1-.2-8.4-11.8-8.4-11.8-.4-.9-.6-2 .2-2.8 1-1.1 2.5-.5 3.3.5.2.3 1 1.4 1 1.4l2.7 3.7c.1.2 3.4 4.4 3.8 4.8.9 1.1 1.8 2.2 2.7 3.2l.5.5c.1.1.1.4.1.8 0 1.3.1 2.6.1 3.9 0 .2.1.4.2.6.3.3.6.1.7-.2.1-.2 0-2.4 0-2.7-.3-.3-.5-1.3-.4-2.9zM12.2 46.9s-2.8-.8-4.8-2.7-2.6-2.7-2.8-3-1.8-3-2-3.6c-.2-.5-.2-.7.2-1 .4-.4 1-.5 1.3.1.1.2.4 1 .5 1.2s1 1.9 1.7 2.8 1.6 2.2 4.4 3.8c.6.3 1.2.6 1.9.9.3.1.6.2.8.4.1.2.1.6-.1.8-.2.4-.7.4-1.1.3zM7.1 30.7l.9 3.1c.3.7 1.1 2.3 1.9 3.3s2.4 2.6 3.4 3.2 2 1.1 3 1.5c1 .3 1.1.4 1.2.5.3.4.2 1.2-.4 1.3-.2 0-1.2 0-1.8-.3L12 41.7c-.5-.4-3.9-3.1-5.1-6S5.3 31 5.2 30.4s-.2-1.1 0-1.4c.3-.4.9-.8 1.3-.3.2.3.3.6.3.9.1 0 .2.8.3 1.1zm26.8-25s.2-.1.5-.1.8.3 1.4.7 1.9 1 3.6 2.9 2.9 3.9 3.4 5.8c.5 1.8.8 3.1.9 5.5 0 .5.1 1.6 0 1.7-.2.5-.5.7-1 .7-.6 0-.7-.5-.7-1l-.1-2.9c-.1-.6-.3-1.9-.7-2.9-.3-1-.7-2.3-1.7-3.6-.9-1.3-2.1-2.8-3.2-3.5l-2.4-1.5c-.6-.6-.7-1.2 0-1.8zm4.9-2.5s.3-.2.5-.1c.2 0 .7.3.9.4s2.1 1.3 3.6 3c1.5 1.6 3.5 5.1 3.7 7.4.1.4.2.9 0 1-.2.2-.4.4-.7.4-.2 0-.5 0-.7-.1-.1-.2-.4-1.1-.4-1.3s-.6-2-1.1-3.1C44 9.7 43.5 8.5 42 7.1s-2.2-1.9-2.8-2.2-1.1-.6-1.1-1c.1-.3.3-.6.7-.7z"/></svg>`; ]]]
+            styles:
+              card: [transition: all 0.3s ease-out]
+              custom_fields:
+                icon_away:
+                  [
+                    top: 10%,
+                    left: 10.1%,
+                    width: 3.1vw,
+                    position: absolute,
+                    fill: "[[[ return entity.state === 'on' ? '#516d82' : '#9da0a2'; ]]]",
+                  ]
+            template: base
+
+          #################################################
+          #                                               #
+          #                     HEMMA                     #
+          #                                               #
+          #################################################
+
+          - type: custom:button-card
+            entity: script.home_arrive
+            state_display: Auto
+            style:
+              top: 82.1%
+              left: 91.05%
+              width: 10%
+            tap_action:
+              action: toggle
+            hold_action: !include popup/hemma_data_kwh.yaml
+            custom_fields:
+              icon_home: >
+                [[[ const state = entity.state === 'on' ? 'animate' : null;
+                return `<svg viewBox="0 0 50 50"> <style>@keyframes animate{from, 20%, 40%, 60%, 80%, to{animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);}0%{transform: scale(0.3);}20%{transform: scale(1.1);}40%{transform: scale(0.9);}60%{transform: scale(1.03);}80%{transform: scale(0.97);}to{transform: scale(1);}}.animate{animation: animate 1s; transform-origin: center;}</style>
+                <path class="${state}" d="M42.2 28.3c0-.8-.2-1-.2-1L26 12.1s-.5-.4-1-.4-1 .3-1 .3L8.2 27.1c-.4.5-.4.9-.4.9v18.3c0 1.1.9 2 1.9 2h8.2a1.47 1.47 0 0 0 1.5-1.5v-14a1.47 1.47 0 0 1 1.5-1.5h8.4a1.47 1.47 0 0 1 1.5 1.5v14a1.47 1.47 0 0 0 1.5 1.5h8.2c1.1 0 2-.9 2-1.9 0-.2-.3-18.1-.3-18.1zM7.3 25l-1.6 1.5s-.3.3-.5.3-.5 0-.8-.2c-.2-.2-2-2.8-2-2.8s-.1-.4-.1-.7c.1-.3.2-.7.3-.8.4-.1 21.5-20.1 21.5-20.1s.4-.3.9-.3c.4 0 .8.1.9.2s.5.4.5.4l8.9 8.5V6s.1-.4.2-.7c.1-.2.3-.3.4-.3s.3-.1.3-.1h3s.3.1.4.3a1.08 1.08 0 0 1 .3.7v9.8l7.2 6.9s.2.3.3.4c.1.2.1.7.1.7 0 .1-.1.4-.2.5s-1.6 2.5-1.6 2.5-.1.3-.3.3c-.2.1-.4.1-.7 0-.2-.1-.5-.4-.5-.4L26.4 9.4s-.3-.3-.5-.4-.4-.2-.8-.2-.5.1-.8.1c-.1.1-.4.3-.7.5C23.3 9.8 7.3 25 7.3 25z"/></svg>`; ]]]
+            styles:
+              card: [transition: all 0.3s ease-out]
+              custom_fields:
+                icon_home:
+                  [
+                    top: 10.5%,
+                    left: 10.1%,
+                    width: 2.9vw,
+                    position: absolute,
+                    fill: "[[[ return entity.state === 'on' ? '#c7983e' : '#9da0a2'; ]]]",
+                  ]
+            template: base

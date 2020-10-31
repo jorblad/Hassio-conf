@@ -1,2 +1,13 @@
 sensor.oregontemphygro_228ec_temp:
   friendly_name: Ute_temp
+sensor.myip:
+  friendly_name: Extern IP-adress
+  icon: mdi:server-network
+sensor.hass:
+  icon: mdi:server-network
+light.vardagrsum_fonster_framsida:
+  friendly_name: Vardagsrum fönster framsida
+light.vardagsrum_fonster_framsida:
+  friendly_name: TV-room towards stairs
+light.vardagsrum_fonster_kortsida:
+  friendly_name: Office wall lights

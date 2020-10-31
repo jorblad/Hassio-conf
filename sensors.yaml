@@ -58,19 +58,20 @@
         - Gråbo
 
 #HarmonyHub
-- platform: template
-  sensors:
-    vardagsrum:
-      value_template: "{{ states.remote.vardagsrumtv.attributes.current_activity }}"
-      friendly_name: "Vardagsrum HarmonyHub"
+#- platform: template
+#  sensors:
+#    vardagsrum:
+#      value_template: "{{ states.remote.vardagsrumtv.attributes.current_activity }}"
+#      friendly_name: "Vardagsrum HarmonyHub"
 
 #IP-dns
 # Own public IPv4 address
-#  - platform: dnsip
+- platform: dnsip
+  hostname: myip.opendns.com
 # Resolve IP address of home-assistant.io via Google DNS
-#  - platform: dnsip
-#    hostname: !secret hostname
-#    name: hass
+- platform: dnsip
+  hostname: !secret hostname
+  name: hass
 
 #System
 - platform: systemmonitor
@@ -94,13 +95,6 @@
 #      - firmware
 #      - vpn
 #      - lan
-
-#Trakt upcoming
-#  - platform: trakt
-#    id: !secret trakt_id
-#    secret: !secret trakt_secret
-#    username: !secret trakt_username
-#    days: 30
 
 #Krisinfo
 - platform: krisinformation
@@ -127,8 +121,329 @@
   api_key: !secret here_api_key
   name: Samuel till jobb
   origin_entity_id: person.samuel_sjobergsson
-  destination_entity_id: zone.jobb
+  destination_entity_id: zone.work
   mode: car
   route_mode: fastest
   traffic_mode: true
   unit_system: metric
+#Alarm
+- platform: time_date
+  display_options:
+    - "date_time"
+    - "time"
+    - "date"
+#Transportstyrelsen
+- platform: trafikverket_weatherstation
+  name: Transportstyrelsen Sörbo
+  api_key: !secret transportstyrelsen
+  station: Sörbo2
+  monitored_conditions:
+    - air_temp
+    - road_temp
+    - humidity
+    - precipitation
+    - wind_direction
+    - wind_direction_text
+    - wind_speed
+    - wind_speed_max
+    - precipitation_amount
+    - precipitation_amountname
+
+- platform: trafikverket_weatherstation
+  name: Transportstyrelsen Viared
+  api_key: !secret transportstyrelsen
+  station: Viared
+  monitored_conditions:
+    - air_temp
+    - road_temp
+    - humidity
+    - precipitation
+    - wind_direction
+    - wind_direction_text
+    - wind_speed
+    - wind_speed_max
+    - precipitation_amount
+    - precipitation_amountname
+
+#Waze travel time
+- platform: waze_travel_time
+  name: Samuel hem
+  origin: person.samuel_sjobergsson
+  destination: zone.home
+  region: "EU"
+
+- platform: waze_travel_time
+  name: Samuel till jobb
+  origin: person.samuel_sjobergsson
+  destination: zone.work
+  region: "EU"
+
+#Bibeln
+- platform: scrape
+  resource: https://sjobergssonsteknik.se/dagens-bibelord/
+  name: Dagens bibelord
+  select: "bibel_ord"
+  scan_interval: 7200
+
+#From matt8707
+#Elpris
+- platform: scrape
+  resource: https://elen.nu/dagens-spotpris/se3-stockholm/
+  name: Aktuellt spotpris
+  select: "div.ml-2.flex-grow > div:nth-child(2) > span"
+  value_template: "{{ ((value.split(' ')[0]) | replace (',', '.')) }}"
+  unit_of_measurement: öre/kWh
+  scan_interval: 1800
+#Covid19
+- platform: rest
+  name: covid_19_folkhalsomyndigheten
+  resource: https://www.arcgis.com/sharing/rest/content/items/2dc63e26f509468f896ec69476b0dab3/data
+  value_template: "{{ 'Otillgänglig' if value_json.embedCode == '' else 'Tillgänglig' }}"
+  json_attributes_path: $.widgets.widget_1.config
+  json_attributes: [embedCode]
+  scan_interval: 21600
+#Hass release notes
+- platform: rest
+  name: hass_release_notes
+  resource: https://api.github.com/repos/home-assistant/core/releases/latest
+  value_template: "{{ value_json.name }}"
+  json_attributes: [body]
+  scan_interval: 21600
+#Hass rc release notes
+- platform: rest
+  name: hass_release_notes_rc
+  resource: https://api.github.com/repos/home-assistant/core/releases?per_page=1
+  value_template: "{{ value_json[0].name }}"
+  json_attributes: [body]
+  scan_interval: 21600
+
+- platform: version
+  name: hass_version_installed
+
+- platform: version
+  name: hass_version_latest
+  source: docker
+
+- platform: version
+  name: hass_version_latest_beta
+  beta: true
+  source: docker
+
+- platform: uptime
+  unit_of_measurement: minutes
+
+- platform: filesize
+  file_paths:
+    - /config/home-assistant_v2.db
+    - /config/home-assistant.log
+
+#- platform: rest
+#  name: docker_cpu
+#  resource: !secret ha_dockermon_cpu
+#  value_template: >
+#    {% set cpuDelta = value_json.cpu_stats.cpu_usage.total_usage - value_json.precpu_stats.cpu_usage.total_usage %}
+#    {% set systemDelta = value_json.cpu_stats.system_cpu_usage - value_json.precpu_stats.system_cpu_usage %}
+#    {{ (cpuDelta / systemDelta * value_json.cpu_stats.cpu_usage.percpu_usage | length * 100) | round(1) }}
+#  json_attributes: ["cpu_stats", "precpu_stats", "memory_stats"]
+
+#- platform: rest
+#  name: docker_uptime
+#  resource: !secret ha_dockermon_uptime
+#  value_template: >
+#    {{ value_json.status.split(' ')[1:] | join(' ') | replace ('About a minute', '1 minut')
+#    | replace ('About an hour', '1 timme')  | replace ('seconds', 'sekunder') | replace ('minutes', 'minuter')
+#    | replace ('hours', 'timmar') | replace ('days', 'dagar') + ' sedan' }}
+
+- platform: plex_recently_added
+  token: !secret plex_token
+  host: !secret plex_host
+  port: !secret plex_port
+  max: 1
+  img_dir: "/"
+  image_resolution: 500
+
+- platform: command_line
+  name: hacs_version
+  scan_interval: 86400
+  command:
+    grep -oP 'VERSION = "\K[^"]+' custom_components/hacs/const.py
+
+    ####################################################
+    #                                                  #
+    #                     TEMPLATE                     #
+    #                                                  #
+    ####################################################
+
+- platform: template
+  sensors:
+    sidebar_greeting:
+      value_template: >
+        {% set time = now().hour %}
+        {% if time <= 1 %} God natt {{'\U0001F611'}}
+        {% elif time <= 3 %} God natt {{'\U0001F62A'}}
+        {% elif time <= 5 %} God natt {{'\U0001F634'}}
+        {% elif time <= 7 %} God morgon {{'\U0001F4A9'}}
+        {% elif time <= 9 %} God morgon {{'\u2615\uFE0F'}}
+        {% elif time <= 10 %} God morgon {{'\U0001F642'}}
+        {% elif time <= 13 %} God dag {{'\U0001F60A'}}
+        {% elif time <= 15 %} God dag {{'\U0001F60E'}}
+        {% elif time <= 17 %} God dag {{'\U0001F44B\U0001F3FB'}}
+        {% elif time <= 19 %} God kväll {{'\U0001F44B\U0001F3FB'}}
+        {% elif time <= 22 %} God kväll {{'\U0001F60C'}}
+        {% elif time <= 23 %} God kväll {{'\U0001F974'}}
+        {% else %} God kväll {{'\U0001F974'}}
+        {% endif %}
+
+    #Sidebar active
+    sidebar_active:
+      value_template: >
+        {% set lights = [states.light.bedroom_lamp_samuel, states.light.dining_room_wall_light, states.light.downstairs_lights, states.light.kitchen_window, states.light.living_room_front, states.light.living_room_side, states.light.office_wall_lights, states.light.server_corner, states.light.tv_room_led_slinga] %}
+        {% set lights_on = lights | selectattr('state','eq','on') | list %}
+        {% set lights_name = lights | selectattr('state','eq','on') | map(attribute='name') | join(', ') %}
+        {% set switches = [states.switch.tradfri_outlet, states.switch.tradfri_outlet_2] %}
+        {% set switches_on = switches | selectattr('state','eq','on') | list %} 
+        {% set switches_name = switches | selectattr('state','eq','on') | map(attribute='name') | join(', ') %}
+        {% if (lights_on | length == 0) and (switches_on | length > 0) %} 
+        {{ switches_name | regex_replace(',([^,]*)$',' och\\1') }} är på
+        {% elif (lights_on | length == 1) and (switches_on | length == 1) %}
+        {{ lights_name }} och {{switches_name }} är på
+        {% elif (lights_on | length == 1) and (switches_on | length > 1) %}
+        {{ lights_name }}, {{ switches_name | regex_replace(',([^,]*)$',' och\\1') }} är på
+        {% elif (lights_on | length > 1) and (switches_on | length == 1) %}
+        {{ lights_on | length }} lampor och {{ switches_name }} är på
+        {% elif (lights_on | length > 1) and (switches_on | length > 1) %}
+        {{ lights_on | length }} lampor, {{ switches_name | regex_replace(',([^,]*)$',' och\\1') }} är på
+        {% elif (lights_on | length == 1) and (switches_on | length == 0) %}
+        {{ lights_name }} är på
+        {% elif (lights_on | length > 1) and (switches_on | length == 0) %}
+        {{ lights_on | length}} lampor är på
+        {% else %} 
+        <font color='#6a7377'>Allt är avstängt</font> 
+        {% endif %}
+
+    #sidebar_weather:
+    #{% set temperature = states('sensor.openweathermap_temperature') %}
+    #{% set apparent = states('sensor.openweathermap_temperature') | round %}
+    #{% set precip = states('sensor.openweathermap_forecast_precipitation') | round %}
+    #{% if not is_state('sensor.openweathermap_temperature', 'unknown') %}
+    #{% if temperature | float <= 0.0 %}
+    #Känns som {{ apparent }}° med
+    #{{ precip }}% risk för snö {{'\u2744\uFE0F'}}
+    #{% elif temperature | float > 0.0 %}
+    #Känns som {{ apparent}}° med
+    #{{ precip }}% risk för regn {{ '\u2614\uFE0F' if precip > 30 }}
+    #{% endif %}
+    #{% else %}
+    #Kan inte läsa in väderinformation...
+    #{% endif %}
+
+    hass_version:
+      icon_template: mdi:home-assistant
+      friendly_name_template: >
+        Installerad {{ states('sensor.hass_version_installed') }}
+      value_template: >
+        {{ 'Senaste' if states('sensor.hass_version_installed') == 
+        states('sensor.hass_version_latest') else states('sensor.hass_version_latest') }}
+
+    hass_dev_release:
+      icon_template: mdi:dev-to
+      friendly_name_template: >
+        {% if ((as_timestamp(state_attr('calendar.home_assistant_devs',
+        'start_time')) - as_timestamp(now())) / 86400) > 20 %}
+          Planerad beta
+        {% else %}
+          {{ state_attr('calendar.home_assistant_devs','message') }}
+        {% endif %}
+      value_template: >
+        {% set dev = ((as_timestamp(state_attr('calendar.home_assistant_devs',
+        'start_time')) - as_timestamp(now())) / 86400) %}
+         {% if dev < -1 %} Släppt
+         {% elif dev < 0 %} Idag
+         {% elif dev < 1 %} Imorgon
+         {% elif dev > 20 %} Ingen
+         {% else %} {{ dev | int + 1 }} dagar
+        {% endif %}
+
+    placeholder:
+      value_template: " "
+
+    sidebar_day:
+      icon_template: mdi:calendar
+      value_template: >
+        {% set days = ['Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag', 'Söndag'] %}
+        {{ days[now().weekday()] }}
+    sidebar_date:
+      icon_template: mdi:calendar
+      value_template: >
+        {% set months = ['Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni', 
+        'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'] %}
+        {{ strptime(states('sensor.date'), '%Y-%m-%d').day }} {{ months[now().month-1] }}
+
+    hass_uptime:
+      friendly_name: Senast omstart
+      icon_template: mdi:update
+      value_template: >
+        {% set uptime = states('sensor.uptime') | float %}
+        {% if uptime < 1 %} {{ (uptime * 60) | int }} sekunder sedan
+        {% elif uptime | int == 1 %} 1 minut sedan
+        {% elif uptime | int > 1 %}
+          {% if uptime | int < 60 %} {{ uptime | int }} minuter sedan
+          {% elif uptime | int / 60 == 24 %} {{ (uptime | int / 60 / 24) | int }} dag sedan
+          {% elif uptime | int / 60 >= 24 %} {{ (uptime | int / 60 / 24) | int }} dagar sedan
+          {% elif uptime | int >= 60 and uptime | int < 120 %} {{ (uptime | int / 60) | int }} timme sedan
+          {% elif uptime | int >= 120 %} {{ (uptime | int / 60) | int }} timmar sedan
+          {% endif %}
+        {% endif %}
+
+    #dockermon_mem:
+    #friendly_name: Minne
+    #icon_template: mdi:memory
+    #value_template: >
+    #{% set entity_id = 'sensor.docker_cpu' %}
+    #{{ (state_attr(entity_id, 'memory_stats')['usage'] /
+    #state_attr(entity_id, 'memory_stats')['limit'] * 100) | round(1) | default(0) }}
+
+    esxi_cpu_percent:
+      friendly_name: ESXi host CPU
+      icon_template: mdi:cpu-64-bit
+      value_template: >
+        {{ (state_attr('sensor.esxi_vmhost_esxi01_man_st_lan', 'cpuusage_ghz') / 
+        state_attr('sensor.esxi_vmhost_esxi01_man_st_lan', 'cputotal_ghz') * 100) | round(1) | default(0) }}
+
+    esxi_memory_percent:
+      friendly_name: ESXi host minne
+      icon_template: mdi:memory
+      value_template: >
+        {{ (state_attr('sensor.esxi_vmhost_esxi01_man_st_lan', 'memusage_gb') / 
+        state_attr('sensor.esxi_vmhost_esxi01_man_st_lan', 'memtotal_gb') * 100) | round(1) | default(0) }}
+
+    esxi_disk_free_total:
+      friendly_name: ESXi host disk användning
+      icon_template: mdi:harddisk
+      value_template: >
+        {{ (float(states('sensor.esxi_datastore_media_a')) + float(states('sensor.esxi_datastore_media_b'))) | round(2)}}
+
+    esxi_disk_size_media_a:
+      friendly_name: ESXi disk size media-a
+      icon_template: mdi:harddisk
+      value_template: >
+        {{ (state_attr('sensor.esxi_datastore_media_a', 'total_space_gb'))}}
+
+    esxi_disk_size_media_b:
+      friendly_name: ESXi disk size media-b
+      icon_template: mdi:harddisk
+      value_template: >
+        {{ (state_attr('sensor.esxi_datastore_media_b', 'total_space_gb'))}}
+
+    esxi_disk_size_total:
+      friendly_name: ESXi host disk size
+      icon_template: mdi:harddisk
+      value_template: >
+        {{ (float(states('sensor.esxi_disk_size_media_a')) + float(states('sensor.esxi_disk_size_media_a'))) | round(2)}}
+
+    esxi_disk_use_percent:
+      friendly_name: ESXi host disk användning
+      icon_template: mdi:harddisk
+      value_template: >
+        {{ 100 - ((float(states('sensor.esxi_disk_free_total')) /
+        float(states('sensor.esxi_disk_size_total')) * 100)) | round(1) | default(0) }}

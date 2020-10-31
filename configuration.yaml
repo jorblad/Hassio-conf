@@ -1,15 +1,28 @@
 homeassistant:
-  latitude: !secret latitude
-  longitude: !secret longitude
-  elevation: 311
-  # Customization file
-  customize: !include customize.yaml
+  allowlist_external_dirs:
+    - "/config/"
+#latitude: !secret latitude
+#longitude: !secret longitude
+#elevation: 311
+# Customization file
+#customize: !include customize.yaml
 
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 frontend:
   themes: !include_dir_merge_named themes/
 
+#Lovelace
+lovelace:
+  mode: storage
+  #Add yaml dashboards
+  dashboards:
+    lovelace-yaml:
+      mode: yaml
+      title: YAML
+      icon: mdi:tablet
+      show_in_sidebar: true
+      filename: lovelace.yaml
 # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
 #http:
 #  base_url:
@@ -44,11 +57,7 @@ binary_sensor: !include binary_sensors.yaml
 #Speedtest
 speedtestdotnet:
   scan_interval:
-    minutes: 30
-  monitored_conditions:
-    - ping
-    - download
-    - upload
+    minutes: 5
 
 #Digital Ocean
 digital_ocean:
@@ -65,9 +74,9 @@ influxdb:
   default_measurement: state
 
 #Google Calendar
-#google:
-#  client_id: !secret google_calendar_client_id
-#  client_secret: !secret google_calendar_client_secret
+google:
+  client_id: !secret google_calendar_client_id
+  client_secret: !secret google_calendar_client_secret
 
 #WebosTV
 webostv:
@@ -90,26 +99,74 @@ webostv:
 #  client_secret: !secret trakt_secret
 
 #Spotify to chromecast
-#spotcast:
-#  username: !secret spotify_username
-#  password: !secret spotify_password
+spotcast:
+  sp_dc: !secret sp_dc
+  sp_key: !secret sp_key
 
 #Spotify
-#spotify:
-#  client_id: !secret spotify_client_id
-#  client_secret: !secret spotify_client_secret
+spotify:
+  client_id: !secret spotify_client_id
+  client_secret: !secret spotify_client_secret
+
 #Debug
 logger:
   default: info
+  logs:
+    # Detected I/O
+    homeassistant.util.async: fatal
+    homeassistant.util.async_: fatal
   #logs:
   #rflink: debug
   #homeassistant.components.rflink: debug
 #switch: !include switch.yaml
-#Automatic git push of config
-switch:
-  platform: command_line
-  switches:
-    home_assistant_git_push:
-      command_on: "git commit -am 'Daily commit' --quiet  && git push --quiet"
-#hacs:
-#  token: !secret hacs_github_access_token
+
+### Office 365 ###
+o365:
+  client_secret: !secret o365_klientsecret
+  client_id: !secret o365_klientid
+  alt_auth_flow: true
+  email_sensor:
+    - name: inbox
+      max_items: 2
+      is_unread: True
+  query_sensors:
+    - name: "HA Notifications"
+      folder: "Inbox/Test_Inbox"
+      from: !secret o365_mail
+      subject_contains: "Notifcation from home assistant"
+      has_attachment: True
+      max_items: 2
+      is_unread: True
+
+#Mousetrapper counter
+counter:
+  mousetrappedhouse:
+    initial: 4
+    step: 1
+    icon: twemoji:mouse
+  mousetrappedtrain:
+    initial: 0
+    step: 1
+    icon: twemoji:mouse
+
+#Proximity
+proximity:
+  home:
+    devices:
+      - device_tracker.oneplus_a6003
+    tolerance: 50
+    unit_of_measurement: km
+  work:
+    zone: jobb
+    devices:
+      - device_tracker.oneplus_a6003
+    tolerance: 50
+    unit_of_measurement: km
+
+utility_meter:
+  samuel_steps:
+    source: sensor.samuels_oneplus_steps_sensor
+    cycle: daily
+
+#browser_mods
+browser_mod:

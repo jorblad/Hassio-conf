@@ -47,7 +47,7 @@ AUTH_CALLBACK_NAME = "api:o365"
 AUTH_CALLBACK_PATH = "/api/o365"
 AUTH_CALLBACK_PATH_ALT = "https://login.microsoftonline.com/common/oauth2/nativeclient"
 CALENDAR_DOMAIN = "calendar"
-CALENDAR_ENTITY_ID_FORMAT = CALENDAR_DOMAIN + ".o365_{}"
+CALENDAR_ENTITY_ID_FORMAT = CALENDAR_DOMAIN + ".{}"
 CONF_ALIASES = "aliases"
 CONF_ALT_CONFIG = "alt_auth_flow"
 CONF_CACHE_PATH = "cache_path"
@@ -55,7 +55,16 @@ CONF_CALENDAR_NAME = "calendar_name"
 CONF_CALENDARS = "calendars"
 CONF_CLIENT_ID = "client_id"
 CONF_CLIENT_SECRET = "client_secret"
+CONF_DEVICE_ID = "device_id"
 CONF_EMAIL_SENSORS = "email_sensor"
+CONF_IGNORE_AVAILABILITY = "ignore_availability"
+CONF_OFFSET = "offset"
+CONF_SEARCH = "search"
+CONF_TRACK = "track"
+CONF_MAX_RESULTS = "max_results"
+CONF_CAL_ID = "cal_id"
+CONF_ENTITIES = "entities"
+
 CONF_HAS_ATTACHMENT = "has_attachment"
 CONF_HOURS_BACKWARD_TO_GET = "start_offset"
 CONF_HOURS_FORWARD_TO_GET = "end_offset"
@@ -66,6 +75,7 @@ CONF_MAX_ITEMS = "max_items"
 CONF_QUERY_SENSORS = "query_sensors"
 CONF_SUBJECT_CONTAINS = "subject_contains"
 CONF_SUBJECT_IS = "subject_is"
+CONF_TRACK_NEW = "track_new_calendar"
 CONFIG_BASE_DIR = get_default_config_dir()
 CONFIGURATOR_DESCRIPTION = (
     "To link your O365 account, click the link, login, and authorize:"
@@ -80,7 +90,7 @@ DEFAULT_NAME = "O365"
 DOMAIN = "o365"
 ICON = "mdi:office"
 MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=15)
-OFFSET = "!!"
+DEFAULT_OFFSET = "!!"
 SCOPE = [
     "offline_access",
     "User.Read",
@@ -91,9 +101,17 @@ SCOPE = [
     "Mail.Send",
     "Mail.Send.Shared",
 ]
+MINIMUM_REQUIRED_SCOPES = [
+    "User.Read",
+    "Calendars.ReadWrite",
+    "Mail.ReadWrite",
+    "Mail.Send",
+]
 TOKEN_BACKEND = FileSystemTokenBackend(
     token_path=DEFAULT_CACHE_PATH, token_filename="o365.token"
 )
+YAML_CALENDARS = f"{DOMAIN}_calendars.yaml"
+
 CALENDAR_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_CALENDAR_NAME): cv.string,
@@ -128,6 +146,7 @@ CONFIG_SCHEMA = vol.Schema(
             {
                 vol.Required(CONF_CLIENT_ID): cv.string,
                 vol.Required(CONF_CLIENT_SECRET): cv.string,
+                vol.Optional(CONF_TRACK_NEW, default=True): bool,
                 vol.Optional(CONF_ALT_CONFIG, default=False): bool,
                 vol.Optional(CONF_CALENDARS, default=[]): [CALENDAR_SCHEMA],
                 vol.Optional(CONF_EMAIL_SENSORS): [EMAIL_SENSOR],
@@ -209,4 +228,26 @@ CALENDAR_SERVICE_MODIFY_SCHEMA = vol.Schema(
 
 CALENDAR_SERVICE_REMOVE_SCHEMA = vol.Schema(
     {vol.Required(ATTR_EVENT_ID): cv.string, vol.Required(ATTR_CALENDAR_ID): cv.string,}
+)
+
+SINGLE_CALSEARCH_CONFIG = vol.Schema(
+    {
+        vol.Required(CONF_NAME): cv.string,
+        vol.Required(CONF_DEVICE_ID): cv.string,
+        vol.Optional(CONF_HOURS_FORWARD_TO_GET, default=24): int,
+        vol.Optional(CONF_HOURS_BACKWARD_TO_GET, default=0): int,
+        vol.Optional(CONF_SEARCH): cv.string,
+        vol.Optional(CONF_TRACK): cv.boolean,
+        vol.Optional(CONF_MAX_RESULTS): cv.positive_int,
+    }
+)
+
+CALENDAR_DEVICE_SCHEMA = vol.Schema(
+    {
+        vol.Required(CONF_CAL_ID): cv.string,
+        vol.Required(CONF_ENTITIES, None): vol.All(
+            cv.ensure_list, [SINGLE_CALSEARCH_CONFIG]
+        ),
+    },
+    extra=vol.ALLOW_EXTRA,
 )

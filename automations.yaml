@@ -1,118 +1,228 @@
 - id: be1d18d8050e40b794bd8e5adc89fe9d
   alias: light on at sunset
   trigger:
-  - event: sunset
-    offset: -00:45:00
-    platform: sun
+    - event: sunset
+      offset: "-1:00:00"
+      platform: sun
   condition:
-  - before: '21:00'
-    condition: time
+    - before: "21:00"
+      condition: time
   action:
-  - alias: ''
-    data:
-      entity_id: scene.lights_at_dark
-    service: homeassistant.turn_on
+    - data:
+        entity_id: scene.lights_at_dark
+      service: homeassistant.turn_on
+  mode: single
 - id: e069721d12524a4b98ac78409a93af01
   alias: light off at sunrise
   trigger:
-  - event: sunrise
-    offset: 00:20:00
-    platform: sun
+    - event: sunrise
+      offset: 01:30:00
+      platform: sun
   action:
-  - data:
-      entity_id: group.window
-    entity_id: scene.lights_at_sunrise
-    service: homeassistant.turn_off
-- id: 08033fc3b435464389dac76d900a86da
-  alias: light on in monday morning
-  trigger:
-  - at: 04:00:00
-    platform: time
-  condition:
-  - condition: and
-    conditions:
-    - condition: time
-      weekday:
-      - mon
-  action:
-  - entity_id: scene.morgon_2
-    service: scene.turn_on
-- id: d9b06da7fd6b4f3b97ef4296ee672316
-  alias: light on in weekday morning
-  trigger:
-  - at: 04:40:00
-    platform: time
-  condition:
-  - condition: state
-    entity_id: binary_sensor.workday_sensor
-    state: 'on'
-  action:
-  - entity_id: scene.morgon_2
-    service: scene.turn_on
+    - entity_id: scene.lights_at_sunrise
+      service: homeassistant.turn_on
+  mode: single
 - id: 4c8aa6175c9043318ffe52c374ea8e91
-  alias: Update OpenUV every 30 minutes during the daytime
+  alias: "[Misc] Update OpenUV every 30 minutes during the daytime"
   trigger:
-  - hours: /1
-    platform: time_pattern
+    - hours: /1
+      platform: time_pattern
   condition:
-  - after: sunrise
-    before: sunset
-    condition: sun
+    - after: sunrise
+      before: sunset
+      condition: sun
   action:
-  - service: openuv.update_uv_index_data
-  - data: {}
-    service: openuv.update_protection_data
-- id: '1558348853012'
+    - service: openuv.update_uv_index_data
+    - data: {}
+      service: openuv.update_protection_data
+  mode: single
+- id: "1558348853012"
   alias: Lights off when not home
   trigger:
-  - at: '22:00'
-    platform: time
+    - at: "22:00:00"
+      platform: time
   condition:
-  - condition: state
-    entity_id: person.samuel_sjobergsson
-    state: not_home
+    - condition: state
+      entity_id: person.samuel_sjobergsson
+      state: not_home
   action:
-  - data:
-      entity_id: group.window
-    service: light.turn_off
-- id: '1559911216570'
-  alias: NightlyBackup
-  trigger:
-  - at: 02:32:00
-    platform: time
-  condition: []
-  action:
-  - service: hassio.snapshot_full
-  - data:
-      entity: home_assistant_git_push
-    service: switch.turn_on
-- id: '1576758705620'
-  alias: LightOnWhenHome
-  description: ''
-  trigger:
-  - event: enter
-    platform: geo_location
-    source: person.samuel_sjobergsson
-    zone: zone.home
-  condition:
-  - after: sunset
-    before: sunrise
-    condition: sun
-  action:
-  - data: {}
-    entity_id: scene.windowlightson
-    service: scene.turn_on
-- id: '1601629157633'
-  alias: Backup-everyday
-  description: ''
-  trigger:
-  - platform: time
-    at: 04:00
-  condition: []
-  action:
-  - service: hassio.addon_stdin
-    data:
-      addon: 7be23ff5_dropbox_sync
-      input:
-        command: upload
+    - service: light.turn_off
+      entity_id: light.upstairs_lights
   mode: single
+- id: "1559911216570"
+  alias: "[Backup] NightlyBackup"
+  trigger:
+    - at: 02:32:00
+      platform: time
+  condition: []
+  action:
+    - service: hassio.snapshot_full
+  mode: single
+- id: "1576758705620"
+  alias: LightOnWhenHome
+  description: ""
+  trigger:
+    - event: enter
+      platform: geo_location
+      source: person.samuel_sjobergsson
+      zone: zone.home
+  condition:
+    - after: sunset
+      before: sunrise
+      condition: sun
+  action:
+    - data: {}
+      entity_id: scene.windowlightson
+      service: scene.turn_on
+  mode: single
+- id: "1601629157633"
+  alias: "[Backup] Backup-everyday"
+  description: ""
+  trigger:
+    - platform: time
+      at: 04:00:00
+  condition: []
+  action:
+    - service: hassio.addon_stdin
+      data:
+        addon: 7be23ff5_dropbox_sync
+        input:
+          command: upload
+  mode: single
+- id: "1603713761176"
+  alias: "[Bedroom] Wake up Samuel!"
+  description: ""
+  trigger:
+    - platform: template
+      value_template:
+        "{{ states('sensor.date_time') == states('sensor.before_alarm')
+        }}"
+  condition:
+    - condition: state
+      entity_id: input_boolean.zzz_helpers_samuels_alarm_triggered_today
+      state: "off"
+  action:
+    - scene: scene.morgon
+  mode: single
+- id: "1603716680056"
+  alias: "[Misc] Reset helper booleans at night"
+  description: ""
+  trigger:
+    - platform: time
+      at: 00:30
+  condition: []
+  action:
+    - service: input_boolean.turn_off
+      data: {}
+      entity_id: input_boolean.zzz_helpers_samuels_alarm_triggered_today
+  mode: single
+- id: "1603981159406"
+  alias: Leaving the house
+  description: ""
+  trigger:
+    - platform: geo_location
+      source: group.adults
+      zone: zone.home
+      event: leave
+  condition:
+    - condition: state
+      entity_id: input_boolean.guest_mode
+      state: "off"
+  action:
+    - type: turn_off
+      device_id: cf1c318bfe7011ea8458bd9cea63cc59
+      entity_id: remote.harmony_hub
+      domain: remote
+  mode: single
+
+- alias: krisinformation_visibility
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.krisinformation_time_trigger
+  action:
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: binary_sensor.krisinformation_time_trigger
+              state: "on"
+          sequence:
+            - service: input_boolean.turn_on
+              entity_id: input_boolean.krisinformation_visibility
+      default:
+        - service: input_boolean.turn_off
+          entity_id: input_boolean.krisinformation_visibility
+
+- alias: conditional_media_playing
+  initial_state: true
+  mode: restart
+  trigger:
+    - platform: state
+      entity_id:
+        [
+          "media_player.spotify_samuel_sjobergsson",
+          "media_player.master_bedroom_speaker",
+          "media_player.tv",
+        ]
+      to: playing
+  action:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.conditional_media
+        option: >
+          {{ trigger.to_state.name }}
+- alias: conditional_media_paused_idle
+  initial_state: true
+  mode: restart
+  trigger:
+    - platform: state
+      entity_id:
+        [
+          "media_player.spotify_samuel_sjobergsson",
+          "media_player.master_bedroom_speaker",
+          "media_player.tv",
+        ]
+      to: ["off", "idle", "standby"]
+    - platform: state
+      entity_id:
+        [
+          "media_player.spotify_samuel_sjobergsson",
+          "media_player.master_bedroom_speaker",
+          "media_player.tv",
+        ]
+      to: paused
+      for:
+        minutes: 10
+  action:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.conditional_media
+        option: >
+          {% set media_players = 
+            [states.media_player.spotify_samuel_sjobergsson, states.media_player.master_bedroom_speaker, 
+              states.media_player.tv] %}
+          {% if media_players | selectattr('state','eq','playing') | list | count == 0 %}
+            {% if media_players | selectattr('state','eq','paused') | list | count == 0 %}
+            Senast nedladdat
+            {% else %}
+            {{ media_players | selectattr('state','eq','paused') | map(attribute='name') | max }}
+            {% endif %}
+          {% else %}
+          {{ media_players | selectattr('state','eq','playing') | map(attribute='name') | max }}
+          {% endif %}
+- alias: conditional_media_all_off
+  initial_state: true
+  trigger:
+    - platform: template
+      value_template: >
+        {{ is_state('media_player.spotify_samuel_sjobergsson', 'idle') and
+        is_state('media_player.master_bedroom_speaker', 'idle') and
+        is_state('media_player.tv', 'standby')
+        or
+        is_state('media_player.tv', 'off') and
+        is_state('media_player.master_bedroom_speaker', 'off') }}
+  action:
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.conditional_media
+        option: Senast nedladdat

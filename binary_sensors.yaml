@@ -3,9 +3,18 @@
 - platform: ping
   host: 8.8.8.8
   name: Google
+  scan_interval:
+    seconds: 10
 - platform: ping
   host: 192.168.210.30
   name: Freenas
+  scan_interval:
+    seconds: 10
+- platform: ping
+  host: 1.1.1.1
+  name: Cloudflare
+  scan_interval:
+    seconds: 10
 
 #Digital ocean
 - platform: digital_ocean
@@ -17,3 +26,32 @@
   country: SE
   workdays: [mon, tue, wed, thu, fri]
   excludes: [sat, sun, holiday]
+
+#Alarm template
+- platform: template
+  sensors:
+    samuels_next_alarm:
+      entity_id:
+        - sensor.samuels_oneplus_next_alarm
+        - sensor.time
+      friendly_name: "Samuels Next Alarm"
+      value_template: >-
+        {{now().strftime("%a %h %d %H:%M %Z %Y") == (((state_attr('sensor.samuels_oneplus_next_alarm', 'Time in Milliseconds') | int / 1000) + 0*60 ) | timestamp_custom('%a %h %d %H:%M %Z %Y'))}}
+
+    #Krisinformation notification
+    krisinformation_time_trigger:
+      icon_template: mdi:alert
+      value_template: >
+        {% set entity_id = 'sensor.krisinformation_boras' %}
+        {% if not is_state_attr(entity_id, 'messages', []) and state_attr(entity_id, 'messages') != None %}
+          {% set published = state_attr(entity_id, 'messages')[0]['Published'] %}
+          {{ 'false' if ((as_timestamp(published) - as_timestamp(now())) / 86400) <= -0.5 else 'true' }}
+        {% endif %}
+
+#Command_line
+- platform: command_line
+  name: plex_availability
+  command: !secret plex_availability
+  scan_interval: 300
+  payload_on: "on"
+  payload_off: "off"

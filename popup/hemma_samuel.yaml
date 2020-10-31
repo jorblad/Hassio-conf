@@ -1,0 +1,56 @@
+action: call-service
+service: browser_mod.popup
+service_data:
+  title: Samuel
+  deviceID: this
+  card:
+    type: custom:stack-in-card
+    cards:
+      - type: entities
+        state_color: true
+        show_header_toggle: false
+        entities:
+          - entity: person.samuel_sjobergsson
+            secondary_info: last-changed
+
+          - type: custom:hui-element
+            card_type: history-graph
+            entities: [entity: person.samuel_sjobergsson]
+            hours_to_show: 24
+            refresh_interval: 0
+
+          - type: custom:hui-element
+            card_type: glance
+            show_state: false
+            entities:
+              - entity: device_tracker.oneplus6_3
+                name: Router
+                icon: mdi:wifi
+
+              - entity: device_tracker.oneplus_a6003
+                name: Position
+                icon: mdi:cellphone
+
+          - type: custom:hui-element
+            card_type: horizontal-stack
+            style: |
+              #root {
+                justify-content: space-evenly;
+                margin: -1em 0 0 0;
+              }
+            cards:
+              - type: custom:button-card
+                name: >
+                  <ha-icon icon="mdi:volume-high"></ha-icon> Spela upp ljud på Oneplus 6
+                tap_action:
+                  action: call-service
+                  service: script.samuel_find_my_phone
+                template: name_action
+                styles:
+                  card: [background: none, border-radius: none]
+
+      - type: custom:hui-element
+        card_type: map
+        class: map
+        entities: [device_tracker.oneplus_a6003]
+        default_zoom: 15

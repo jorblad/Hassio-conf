@@ -1,15 +1,44 @@
-  - platform: rflink
-    automatic_add: true
-    devices:
-      newkaku_01718f56_10:
-        name: Vardagrsum fönster mot balkong
-      newkaku_0171856_e:
-        name: Lampa 1
-      newkaku_0171856_f:
-        name: Lampa 2
-      newkaku_01318b56_f:
-        name: Kök fönster
-      newkaku_01318b56_10:
-        name: Sovrum fönster
-      newkaku_01318b56_e:
-        name: Vardagsrum fönster mot allingsåsvägen
+- platform: rflink
+  automatic_add: true
+  devices:
+    newkaku_01718f56_10:
+      name: TV-room LED slinga
+      type: switchable
+    newkaku_0171856_e:
+      name: Lampa 1
+      type: switchable
+    newkaku_0171856_f:
+      name: Lampa 2
+      type: switchable
+    newkaku_01318b56_f:
+      name: Dining room wall light
+      type: switchable
+    newkaku_01318b56_10:
+      name: Sovrum fönster
+      type: switchable
+    newkaku_01318b56_e:
+      name: Office wall lights
+      type: switchable
+- platform: group
+  name: Upstairs lights
+  entities:
+    - light.bedroom_lamp_samuel
+    - light.office_wall_lights
+    - light.tv_room_led_slinga
+- platform: group
+  name: Downstairs lights
+  entities:
+    - light.living_room_front
+    - light.living_room_side
+    - light.kitchen_window
+    - light.dining_room_wall_light
+- platform: group
+  name: Living room lights
+  entities:
+    - light.living_room_front
+    - light.living_room_side
+- platform: group
+  name: Kitchen room lights
+  entities:
+    - light.kitchen_window
+    - light.dining_room_wall_light

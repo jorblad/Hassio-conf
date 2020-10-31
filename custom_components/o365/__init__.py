@@ -3,6 +3,11 @@ from O365 import Account
 from homeassistant.components.http import HomeAssistantView
 from homeassistant.helpers import discovery
 from homeassistant.core import callback
+
+try:
+    from homeassistant.helpers.network import get_url
+except ImportError:
+    pass
 from .const import (
     DOMAIN,
     CONF_CLIENT_ID,
@@ -21,6 +26,7 @@ from .const import (
     CONF_QUERY_SENSORS,
     CONF_EMAIL_SENSORS,
     CONFIG_SCHEMA,
+    CONF_TRACK_NEW,
 )
 
 from .utils import validate_permissions
@@ -36,7 +42,10 @@ def setup(hass, config):
     credentials = (conf.get(CONF_CLIENT_ID), conf.get(CONF_CLIENT_SECRET))
     alt_config = conf.get(CONF_ALT_CONFIG)
     if not alt_config:
-        callback_url = f"{hass.config.api.base_url}{AUTH_CALLBACK_PATH}"
+        try:
+            callback_url = f"{get_url(hass)}{AUTH_CALLBACK_PATH}"
+        except NameError:
+            callback_url = f"{hass.config.api.base_url}{AUTH_CALLBACK_PATH}"
     else:
         callback_url = AUTH_CALLBACK_PATH_ALT
 
@@ -65,11 +74,21 @@ def setup(hass, config):
 
 def do_setup(hass, config, account):
     """Run the setup after we have everything configured."""
+    if config.get(CONF_CALENDARS, None):
+        import warnings
+
+        _LOGGER.warning(
+            "Configuring calendars trough configuration.yaml has been deprecated, and will be removed in a future release. Please see the docs for how to proceed:\nhttps://github.com/PTST/O365-HomeAssistant/tree/master#calendar-configuration"
+        )
+        warnings.warn(
+            "Configuring calendars trough configuration.yaml has been deprecated, and will be removed in a future release. Please see the docs for how to proceed",
+            FutureWarning,
+        )
     hass.data[DOMAIN] = {
         "account": account,
-        CONF_CALENDARS: config.get(CONF_CALENDARS, []),
         CONF_EMAIL_SENSORS: config.get(CONF_EMAIL_SENSORS, []),
         CONF_QUERY_SENSORS: config.get(CONF_QUERY_SENSORS, []),
+        CONF_TRACK_NEW: config.get(CONF_TRACK_NEW, True),
     }
     hass.async_create_task(
         discovery.async_load_platform(hass, "calendar", DOMAIN, {}, config)
