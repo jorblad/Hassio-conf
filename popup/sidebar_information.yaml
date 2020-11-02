@@ -63,6 +63,24 @@ service_data:
       - break
 
       - type: entities
+        title: Tablet
+        class: add_header
+        show_header_toggle: false
+        entities:
+          - type: custom:hui-element
+            card_type: horizontal-stack
+            style: *horizontal-style
+            cards:
+              - type: custom:button-card
+                name: '<ha-icon icon="mdi:reload"></ha-icon> Lovelace'
+                tap_action:
+                  action: call-service
+                  service: browser_mod.lovelace_reload
+                template: name_action
+
+      - break
+
+      - type: entities
         title: ESXi host
         class: add_header
         show_header_toggle: false

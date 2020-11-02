@@ -1,14 +1,96 @@
 home_leave:
   alias: Lämnar hemmet
   sequence:
-  - service: light.turn_off
-    data: {}
-    entity_id: light.office_wall_lights
+    - service: input_boolean.turn_on
+      data: {}
+      entity_id: input_boolean.house_empty
+    - service: light.turn_off
+      data: {}
+      entity_id: light.upstairs_lights
+    - service: remote.turn_off
+      data: {}
+      entity_id: remote.harmony_hub
   mode: single
 home_arrive:
   alias: Kommer hem
   sequence:
-  - service: light.turn_on
-    data: {}
-    entity_id: light.office_wall_lights
+    - service: input_boolean.turn_off
+      data: {}
+      entity_id: input_boolean.house_empty
+    - condition: state
+      entity_id: input_boolean.daytime
+      state: "off"
+    - service: light.turn_on
+      data:
+        profile: relax
+      entity_id: light.upstairs_lights
   mode: single
+lights_at_dark:
+  alias: lights_at_dark
+  sequence:
+    - service: input_boolean.turn_off
+      data: {}
+      entity_id: input_boolean.daytime
+    - service: light.turn_on
+      data: {}
+      entity_id: light.downstairs_lights
+    - service: light.turn_on
+      data: {}
+      entity_id: light.tv_room_led_slinga
+  mode: single
+lights_at_sunrise:
+  alias: lights_at_sunrise
+  sequence:
+    - service: light.turn_off
+      data: {}
+      entity_id: light.downstairs_lights
+    - service: light.turn_off
+      data: {}
+      entity_id: light.upstairs_lights
+    - service: input_boolean.turn_on
+      data: {}
+      entity_id: input_boolean.daytime
+  mode: single
+morning_samuel:
+  alias: Morning-samuel
+  sequence:
+    - service: light.turn_on
+      data:
+        transition: 45
+        profile: energize
+      entity_id: light.bedroom_lamp_samuel
+  mode: single
+night:
+  alias: Night
+  sequence:
+    - service: light.turn_off
+      data: {}
+      entity_id: light.bedroom_lamp_samuel
+    - service: remote.turn_off
+      data: {}
+      entity_id: remote.harmony_hub
+    - service: media_player.media_pause
+      data: {}
+      entity_id: media_player.spotify_samuel_sjobergsson
+  mode: single
+
+samuel_find_my_oneplus:
+  alias: Samuel find my oneplus
+  sequence:
+    - repeat:
+        count: 3
+        sequence:
+          - service: notify.mobile_app_samuels_oneplus
+            data:
+              title: Hitta min oneplus
+              message: Här är jag
+              data:
+                push:
+                  sound:
+                    name: Ringtone_UK_Haptic.caf
+                    critical: 1
+                    volume: 1.0
+                    priority: high
+                    channel: alarm_stream
+          - delay:
+              seconds: 4

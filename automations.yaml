@@ -43,10 +43,10 @@
       platform: time
   condition:
     - condition: state
-      entity_id: person.samuel_sjobergsson
+      entity_id: group.adults
       state: not_home
   action:
-    - service: light.turn_off
+    - service: script.night
       entity_id: light.upstairs_lights
   mode: single
 - id: "1559911216570"
@@ -57,23 +57,6 @@
   condition: []
   action:
     - service: hassio.snapshot_full
-  mode: single
-- id: "1576758705620"
-  alias: LightOnWhenHome
-  description: ""
-  trigger:
-    - event: enter
-      platform: geo_location
-      source: person.samuel_sjobergsson
-      zone: zone.home
-  condition:
-    - after: sunset
-      before: sunrise
-      condition: sun
-  action:
-    - data: {}
-      entity_id: scene.windowlightson
-      service: scene.turn_on
   mode: single
 - id: "1601629157633"
   alias: "[Backup] Backup-everyday"
@@ -102,7 +85,9 @@
       entity_id: input_boolean.zzz_helpers_samuels_alarm_triggered_today
       state: "off"
   action:
-    - scene: scene.morgon
+    - service: script.turn_on
+      data: {}
+      entity_id: script.morning_samuel
   mode: single
 - id: "1603716680056"
   alias: "[Misc] Reset helper booleans at night"
@@ -129,12 +114,10 @@
       entity_id: input_boolean.guest_mode
       state: "off"
   action:
-    - type: turn_off
-      device_id: cf1c318bfe7011ea8458bd9cea63cc59
-      entity_id: remote.harmony_hub
-      domain: remote
+    - service: script.turn_on
+      data: {}
+      entity_id: script.home_leave
   mode: single
-
 - alias: krisinformation_visibility
   initial_state: true
   trigger:
@@ -152,44 +135,43 @@
       default:
         - service: input_boolean.turn_off
           entity_id: input_boolean.krisinformation_visibility
-
+  id: 6720dcf073bd489c9ce3d27897171f65
 - alias: conditional_media_playing
   initial_state: true
   mode: restart
   trigger:
     - platform: state
       entity_id:
-        [
-          "media_player.spotify_samuel_sjobergsson",
-          "media_player.master_bedroom_speaker",
-          "media_player.tv",
-        ]
+        - media_player.spotify_samuel_sjobergsson
+        - media_player.master_bedroom_speaker
+        - media_player.tv
       to: playing
   action:
     - service: input_select.select_option
       data:
         entity_id: input_select.conditional_media
-        option: >
-          {{ trigger.to_state.name }}
+        option: "{{ trigger.to_state.name }}
+
+          "
+  id: 323aa36792504b94a09442839db514e7
 - alias: conditional_media_paused_idle
   initial_state: true
   mode: restart
   trigger:
     - platform: state
       entity_id:
-        [
-          "media_player.spotify_samuel_sjobergsson",
-          "media_player.master_bedroom_speaker",
-          "media_player.tv",
-        ]
-      to: ["off", "idle", "standby"]
+        - media_player.spotify_samuel_sjobergsson
+        - media_player.master_bedroom_speaker
+        - media_player.tv
+      to:
+        - "off"
+        - idle
+        - standby
     - platform: state
       entity_id:
-        [
-          "media_player.spotify_samuel_sjobergsson",
-          "media_player.master_bedroom_speaker",
-          "media_player.tv",
-        ]
+        - media_player.spotify_samuel_sjobergsson
+        - media_player.master_bedroom_speaker
+        - media_player.tv
       to: paused
       for:
         minutes: 10
@@ -197,32 +179,106 @@
     - service: input_select.select_option
       data:
         entity_id: input_select.conditional_media
-        option: >
-          {% set media_players = 
-            [states.media_player.spotify_samuel_sjobergsson, states.media_player.master_bedroom_speaker, 
-              states.media_player.tv] %}
-          {% if media_players | selectattr('state','eq','playing') | list | count == 0 %}
-            {% if media_players | selectattr('state','eq','paused') | list | count == 0 %}
-            Senast nedladdat
-            {% else %}
-            {{ media_players | selectattr('state','eq','paused') | map(attribute='name') | max }}
-            {% endif %}
-          {% else %}
-          {{ media_players | selectattr('state','eq','playing') | map(attribute='name') | max }}
-          {% endif %}
+        option:
+          "{% set media_players = \n  [states.media_player.spotify_samuel_sjobergsson,\
+          \ states.media_player.master_bedroom_speaker, \n    states.media_player.tv]\
+          \ %}\n{% if media_players | selectattr('state','eq','playing') | list | count\
+          \ == 0 %}\n  {% if media_players | selectattr('state','eq','paused') | list\
+          \ | count == 0 %}\n  Senast nedladdat\n  {% else %}\n  {{ media_players |\
+          \ selectattr('state','eq','paused') | map(attribute='name') | max }}\n  {%\
+          \ endif %}\n{% else %} {{ media_players | selectattr('state','eq','playing')\
+          \ | map(attribute='name') | max }} {% endif %}\n"
+  id: 25473fb71c28430187149fe6b6ad2a4e
 - alias: conditional_media_all_off
   initial_state: true
   trigger:
     - platform: template
-      value_template: >
-        {{ is_state('media_player.spotify_samuel_sjobergsson', 'idle') and
-        is_state('media_player.master_bedroom_speaker', 'idle') and
-        is_state('media_player.tv', 'standby')
-        or
-        is_state('media_player.tv', 'off') and
-        is_state('media_player.master_bedroom_speaker', 'off') }}
+      value_template:
+        "{{ is_state('media_player.spotify_samuel_sjobergsson', 'idle')
+        and is_state('media_player.master_bedroom_speaker', 'idle') and is_state('media_player.tv',
+        'standby') or is_state('media_player.tv', 'off') and is_state('media_player.master_bedroom_speaker',
+        'off') }}
+
+        "
   action:
     - service: input_select.select_option
       data:
         entity_id: input_select.conditional_media
         option: Senast nedladdat
+  id: 8a4bbefe7a4e424b83dfcb57df4ad9ea
+- id: "1604259840797"
+  alias: Arriving home
+  description: ""
+  trigger:
+    - platform: geo_location
+      source: group.adult
+      zone: zone.home
+      event: leave
+  condition: []
+  action:
+    - service: script.turn_on
+      data: {}
+      entity_id: script.home_arrive
+  mode: single
+
+- alias: hacs_version_grep
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: sensor.hacs
+  action:
+    - service: homeassistant.update_entity
+      entity_id: sensor.hacs_version
+  mode: single
+
+- alias: update_hass_release_notes
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id:
+        ["sensor.hass_version_latest", "sensor.hass_version_latest_beta"]
+  action:
+    - service: homeassistant.update_entity
+      entity_id: ["sensor.hass_release_notes", "sensor.hass_release_notes_rc"]
+  mode: single
+
+- alias: ios_notify_hass_rc
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: sensor.hass_version_latest_beta
+  condition:
+    - condition: state
+      entity_id: sensor.hass_dev_release
+      state: ["Idag", "Släppt"]
+  action:
+    - service: notify.mobile_app_samuels_oneplus
+      data:
+        title: >
+          RC {{ states(trigger.entity_id) }} tillgänglig
+        message: Tryck för att läsa versionsinformation
+        data:
+          url: https://rc.home-assistant.io/latest-release-notes/
+  mode: single
+
+- alias: ios_notify_hass_update
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: sensor.hass_version
+  condition:
+    condition: not
+    conditions:
+      - condition: state
+        entity_id: sensor.hass_version
+        state: Senaste
+  action:
+    - service: notify.mobile_app_samuels_oneplus
+      data:
+        title: >
+          {{ states(trigger.entity_id) }} tillgänglig {{ '\U0001F389' }}
+        message: Håll in för att uppdatera
+        data:
+          data:
+            url: https://www.home-assistant.io/latest-release-notes/
+  mode: single
