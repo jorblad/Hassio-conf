@@ -8,6 +8,8 @@ homeassistant:
 # Customization file
 #customize: !include customize.yaml
 
+readme:
+
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 frontend:
