@@ -223,6 +223,7 @@
     - service: homeassistant.update_entity
       entity_id: sensor.hacs_version
   mode: single
+  id: 474a0f5648914d9e9d77551ab3c3b039
 - alias: update_hass_release_notes
   initial_state: true
   trigger:
@@ -236,6 +237,7 @@
         - sensor.hass_release_notes
         - sensor.hass_release_notes_rc
   mode: single
+  id: 793aa254f90a490ea31f05925065f85f
 - alias: phone_notify_hass_rc
   initial_state: true
   trigger:
@@ -250,7 +252,7 @@
   action:
     - service: notify.mobile_app_samuels_oneplus
       data:
-        title: "RC {{ states(trigger.entity_id) }} tillgänglig"
+        title: RC {{ states(trigger.entity_id) }} tillgänglig
         message: En ny beta-version finns tillgänglig
         data:
           actions:
@@ -258,6 +260,7 @@
               title: Läs release notes
               uri: https://rc.home-assistant.io/latest-release-notes/
   mode: single
+  id: ced383f0e99941c9b6d0b2c5b921f259
 - alias: phone_notify_hass_update
   initial_state: true
   trigger:
@@ -272,12 +275,24 @@
   action:
     - service: notify.mobile_app_samuels_oneplus
       data:
-        title: '{{ states(trigger.entity_id) }} tillgänglig {{ ''\U0001F389'' }}
-          '
+        title: '{{ states(trigger.entity_id) }} tillgänglig {{ ''\U0001F389'' }} '
         message: Ny uppdatering för homeassistant finns nu tillgänglig
         data:
           actions:
             - action: URI
               title: Läs release notes
               uri: https://www.home-assistant.io/latest-release-notes/
+  mode: single
+- id: "1605041826359"
+  alias: GithubPush
+  description: ""
+  trigger:
+    - platform: time
+      at: 04:34
+  condition: []
+  action:
+    - service: hassio.addon_stdin
+      data:
+        addon: a0d7b954_ssh
+        input: /config/ha_gitpush.sh
   mode: single
