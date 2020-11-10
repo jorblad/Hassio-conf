@@ -57,7 +57,7 @@ service_data:
                   action: call-service
                   service: script.turn_on
                   service_data:
-                    entity_id: script.homeassistant_restart
+                    entity-id: script.restart_ha-container
                 template: name_action
 
       - break

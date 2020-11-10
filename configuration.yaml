@@ -1,4 +1,5 @@
 homeassistant:
+  legacy_templates: false
   allowlist_external_dirs:
     - "/config/"
 #latitude: !secret latitude
@@ -19,10 +20,16 @@ lovelace:
   dashboards:
     lovelace-yaml:
       mode: yaml
-      title: YAML
+      title: Lovelace-tablet
       icon: mdi:tablet
       show_in_sidebar: true
       filename: lovelace.yaml
+    lovelace-phone:
+      mode: yaml
+      title: Lovelace-phone
+      icon: mdi:cellphone-android
+      show_in_sidebar: true
+      filename: lovelace-phone.yaml
 # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
 #http:
 #  base_url:
@@ -170,3 +177,8 @@ utility_meter:
 
 #browser_mods
 browser_mod:
+  prefix: "browser_"
+  devices:
+    3803775c_e70cb959:
+      name: kitchen_ipad
+      camera: true

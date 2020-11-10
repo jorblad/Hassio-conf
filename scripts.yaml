@@ -1,22 +1,14 @@
 home_leave:
   alias: Lämnar hemmet
   sequence:
-    - service: input_boolean.turn_on
-      data: {}
-      entity_id: input_boolean.house_empty
     - service: light.turn_off
-      data: {}
       entity_id: light.upstairs_lights
     - service: remote.turn_off
-      data: {}
       entity_id: remote.harmony_hub
   mode: single
 home_arrive:
   alias: Kommer hem
   sequence:
-    - service: input_boolean.turn_off
-      data: {}
-      entity_id: input_boolean.house_empty
     - condition: state
       entity_id: input_boolean.daytime
       state: "off"
@@ -29,27 +21,27 @@ lights_at_dark:
   alias: lights_at_dark
   sequence:
     - service: input_boolean.turn_off
-      data: {}
       entity_id: input_boolean.daytime
     - service: light.turn_on
-      data: {}
       entity_id: light.downstairs_lights
+    - condition: state
+      entity_id: sensor.tpl_occupancy
+      state: "True"
     - service: light.turn_on
-      data: {}
-      entity_id: light.tv_room_led_slinga
+      entity_id: light.upstairs_lights
   mode: single
 lights_at_sunrise:
   alias: lights_at_sunrise
   sequence:
     - service: light.turn_off
-      data: {}
       entity_id: light.downstairs_lights
-    - service: light.turn_off
-      data: {}
-      entity_id: light.upstairs_lights
     - service: input_boolean.turn_on
-      data: {}
       entity_id: input_boolean.daytime
+    - condition: state
+      entity_id: sensor.tpl_occupancy
+      state: "False"
+    - service: light.turn_off
+      entity_id: light.upstairs_lights
   mode: single
 morning_samuel:
   alias: Morning-samuel
@@ -64,16 +56,15 @@ night:
   alias: Night
   sequence:
     - service: light.turn_off
-      data: {}
       entity_id: light.bedroom_lamp_samuel
-    - service: remote.turn_off
-      data: {}
-      entity_id: remote.harmony_hub
+    - condition: state
+      entity_id: input_boolean.guest_mode
+      state: "off"
     - service: media_player.media_pause
-      data: {}
       entity_id: media_player.spotify_samuel_sjobergsson
+    - service: remote.turn_off
+      entity_id: remote.harmony_hub
   mode: single
-
 samuel_find_my_oneplus:
   alias: Samuel find my oneplus
   sequence:

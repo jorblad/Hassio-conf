@@ -41,6 +41,11 @@ service_data:
                 name: Jobbtelefon batteri
                 show_state: true
 
+              - entity: sensor.samuel_steps
+                name: Antal steg
+                icon: mdi:walk
+                show_state: true
+
           - type: custom:hui-element
             card_type: horizontal-stack
             style: |

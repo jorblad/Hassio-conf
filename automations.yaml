@@ -8,9 +8,8 @@
     - before: "21:00"
       condition: time
   action:
-    - data:
-        entity_id: scene.lights_at_dark
-      service: homeassistant.turn_on
+    - service: script.turn_on
+      entity_id: script.lights_at_dark
   mode: single
 - id: e069721d12524a4b98ac78409a93af01
   alias: light off at sunrise
@@ -19,8 +18,8 @@
       offset: 01:30:00
       platform: sun
   action:
-    - entity_id: scene.lights_at_sunrise
-      service: homeassistant.turn_on
+    - entity_id: script.lights_at_sunrise
+      service: script.turn_on
   mode: single
 - id: 4c8aa6175c9043318ffe52c374ea8e91
   alias: "[Misc] Update OpenUV every 30 minutes during the daytime"
@@ -46,8 +45,8 @@
       entity_id: group.adults
       state: not_home
   action:
-    - service: script.night
-      entity_id: light.upstairs_lights
+    - service: script.turn_on
+      entity_id: script.night
   mode: single
 - id: "1559911216570"
   alias: "[Backup] NightlyBackup"
@@ -105,14 +104,10 @@
   alias: Leaving the house
   description: ""
   trigger:
-    - platform: geo_location
-      source: group.adults
-      zone: zone.home
-      event: leave
-  condition:
-    - condition: state
-      entity_id: input_boolean.guest_mode
-      state: "off"
+    - platform: state
+      entity_id: sensor.tpl_occupancy
+      to: "False"
+  condition: []
   action:
     - service: script.turn_on
       data: {}
@@ -210,17 +205,15 @@
   alias: Arriving home
   description: ""
   trigger:
-    - platform: geo_location
-      source: group.adult
-      zone: zone.home
-      event: leave
+    - platform: state
+      entity_id: sensor.tpl_occupancy
+      to: "True"
   condition: []
   action:
     - service: script.turn_on
       data: {}
       entity_id: script.home_arrive
   mode: single
-
 - alias: hacs_version_grep
   initial_state: true
   trigger:
@@ -230,19 +223,20 @@
     - service: homeassistant.update_entity
       entity_id: sensor.hacs_version
   mode: single
-
 - alias: update_hass_release_notes
   initial_state: true
   trigger:
     - platform: state
       entity_id:
-        ["sensor.hass_version_latest", "sensor.hass_version_latest_beta"]
+        - sensor.hass_version_latest
+        - sensor.hass_version_latest_beta
   action:
     - service: homeassistant.update_entity
-      entity_id: ["sensor.hass_release_notes", "sensor.hass_release_notes_rc"]
+      entity_id:
+        - sensor.hass_release_notes
+        - sensor.hass_release_notes_rc
   mode: single
-
-- alias: ios_notify_hass_rc
+- alias: phone_notify_hass_rc
   initial_state: true
   trigger:
     - platform: state
@@ -250,18 +244,21 @@
   condition:
     - condition: state
       entity_id: sensor.hass_dev_release
-      state: ["Idag", "Släppt"]
+      state:
+        - Idag
+        - Släppt
   action:
     - service: notify.mobile_app_samuels_oneplus
       data:
-        title: >
-          RC {{ states(trigger.entity_id) }} tillgänglig
-        message: Tryck för att läsa versionsinformation
+        title: "RC {{ states(trigger.entity_id) }} tillgänglig"
+        message: En ny beta-version finns tillgänglig
         data:
-          url: https://rc.home-assistant.io/latest-release-notes/
+          actions:
+            - action: URI
+              title: Läs release notes
+              uri: https://rc.home-assistant.io/latest-release-notes/
   mode: single
-
-- alias: ios_notify_hass_update
+- alias: phone_notify_hass_update
   initial_state: true
   trigger:
     - platform: state
@@ -275,10 +272,12 @@
   action:
     - service: notify.mobile_app_samuels_oneplus
       data:
-        title: >
-          {{ states(trigger.entity_id) }} tillgänglig {{ '\U0001F389' }}
-        message: Håll in för att uppdatera
+        title: '{{ states(trigger.entity_id) }} tillgänglig {{ ''\U0001F389'' }}
+          '
+        message: Ny uppdatering för homeassistant finns nu tillgänglig
         data:
-          data:
-            url: https://www.home-assistant.io/latest-release-notes/
+          actions:
+            - action: URI
+              title: Läs release notes
+              uri: https://www.home-assistant.io/latest-release-notes/
   mode: single

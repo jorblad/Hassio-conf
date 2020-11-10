@@ -121,7 +121,7 @@
   api_key: !secret here_api_key
   name: Samuel till jobb
   origin_entity_id: person.samuel_sjobergsson
-  destination_entity_id: zone.work
+  destination_entity_id: zone.jobb
   mode: car
   route_mode: fastest
   traffic_mode: true
@@ -132,6 +132,7 @@
     - "date_time"
     - "time"
     - "date"
+
 #Transportstyrelsen
 - platform: trafikverket_weatherstation
   name: Transportstyrelsen Sörbo
@@ -175,7 +176,7 @@
 - platform: waze_travel_time
   name: Samuel till jobb
   origin: person.samuel_sjobergsson
-  destination: zone.work
+  destination: zone.jobb
   region: "EU"
 
 #Bibeln
@@ -184,6 +185,11 @@
   name: Dagens bibelord
   select: "bibel_ord"
   scan_interval: 7200
+
+#Greenely
+- platform: greenely
+  email: !secret greenely_email
+  password: !secret greenely_password
 
 #From matt8707
 #Elpris
@@ -270,10 +276,41 @@
 
     ####################################################
     #                                                  #
+    #                     Feedparser                   #
+    #                                                  #
+    ####################################################
+- platform: feedparser
+  name: Quote of the Day
+  feed_url: "https://www.brainyquote.com/link/quotebr.rss"
+  date_format: "%a, %b %d %I:%M %p"
+
+- platform: feedparser
+  name: Bible trivia
+  feed_url: "https://www.theverseoftheday.info/rss/Bible-trivia"
+  date_format: "%a, %b %d %I:%M %p"
+
+- platform: feedparser
+  name: Verse of the day
+  feed_url: "https://www.theverseoftheday.info/rss/the-verse-of-the-day"
+  date_format: "%a, %b %d %I:%M %p"
+
+- platform: feedparser
+  name: dagens citat
+  feed_url: "https://www.dagenscitat.nu/rss.xml"
+  date_format:
+    "%a, %b %d %I:%M %p"
+
+    ####################################################
+    #                                                  #
     #                     TEMPLATE                     #
     #                                                  #
     ####################################################
 
+    ####################################################
+    #                                                  #
+    #                     Sidebar                      #
+    #                                                  #
+    ####################################################
 - platform: template
   sensors:
     sidebar_greeting:
@@ -338,6 +375,55 @@
           Kan inte läsa in väderinformation...
         {% endif %}
 
+    sidebar_day:
+      icon_template: mdi:calendar
+      value_template: >
+        {% set days = ['Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag', 'Söndag'] %}
+        {{ days[now().weekday()] }}
+    sidebar_date:
+      icon_template: mdi:calendar
+      value_template: >
+        {% set months = ['Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni', 
+        'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'] %}
+        {{ strptime(states('sensor.date'), '%Y-%m-%d').day }} {{ months[now().month-1] }}
+
+    sidebar_dagenscitat:
+      friendly_name: Dagens citat
+      value_template: "{{ states.sensor.dagens_citat.attributes.entries[0].summary }}"
+
+    garbage_disposal:
+      friendly_name: Soptömning
+      icon_template: mdi:calendar
+      value_template: >
+        {% set start_time = state_attr('calendar.garbage_collection', 'start_time') %}
+        {% if start_time != None %}
+          {% set time = as_timestamp(start_time) | timestamp_custom('%H:%M') %}
+          {% set hours = as_timestamp(start_time) | timestamp_custom('%H') | int / 24 %}
+          {% set count = (as_timestamp(start_time) - as_timestamp(now())) / 86400 - hours %}
+          {% set day = strptime(start_time, '%Y-%m-%d %H:%M:%S').strftime('%A') 
+          | replace('Monday', 'måndag')
+          | replace('Tuesday', 'tisdag')
+          | replace('Wednesday', 'onsdag')
+          | replace('Thursday', 'torsdag')
+          | replace('Friday', 'fredag')
+          | replace('Saturday', 'lördag')
+          | replace('Sunday', 'söndag') %}
+          {% if count <= 0.0 %}
+            {{'♻️'}} Soptömning idag
+          {% elif count <= 1.0 %}
+            Soptömning imorgon
+          {% elif count <= 2.0 %}
+            Soptömning i övermorgon
+          {% else %}
+            Soptömning om {{ (count + hours) | round }} dagar på {{ day }}
+          {% endif %}
+        {% endif %}
+
+    ####################################################
+    #                                                  #
+    #                     Updates                      #
+    #                                                  #
+    ####################################################
     hass_version:
       icon_template: mdi:home-assistant
       friendly_name_template: >
@@ -368,8 +454,18 @@
     placeholder:
       value_template: " "
 
+    ####################################################
+    #                                                  #
+    #                     Weather                      #
+    #                                                  #
+    ####################################################
     weather_precprob:
-      value_template: "{{ state_attr('weather.smedsas_skogslund', 'forecast')[0].precipitation_probability }}"
+      value_template: >
+        {% if state_attr('weather.smedsas_skogslund', 'forecast')[0].precipitation_probability is defined %}
+        {{ state_attr('weather.smedsas_skogslund', 'forecast')[0].precipitation_probability }}
+        {% else %}
+        0
+        {% endif %}
 
     heat_index_1:
       friendly_name: "Känns som"
@@ -403,18 +499,11 @@
         {{- HI_C|round(1) -}}
       unit_of_measurement: "°C"
 
-    sidebar_day:
-      icon_template: mdi:calendar
-      value_template: >
-        {% set days = ['Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag', 'Söndag'] %}
-        {{ days[now().weekday()] }}
-    sidebar_date:
-      icon_template: mdi:calendar
-      value_template: >
-        {% set months = ['Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni', 
-        'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'] %}
-        {{ strptime(states('sensor.date'), '%Y-%m-%d').day }} {{ months[now().month-1] }}
-
+    ####################################################
+    #                                                  #
+    #                     System                       #
+    #                                                  #
+    ####################################################
     hass_uptime:
       friendly_name: Senast omstart
       icon_template: mdi:update
@@ -484,30 +573,51 @@
         {{ 100 - ((float(states('sensor.esxi_disk_free_total')) /
         float(states('sensor.esxi_disk_size_total')) * 100)) | round(1) | default(0) }}
 
-    garbage_disposal:
-      friendly_name: Soptömning
-      icon_template: mdi:calendar
-      value_template: >
-        {% set start_time = state_attr('calendar.garbage_collection', 'start_time') %}
-        {% if start_time != None %}
-          {% set time = as_timestamp(start_time) | timestamp_custom('%H:%M') %}
-          {% set hours = as_timestamp(start_time) | timestamp_custom('%H') | int / 24 %}
-          {% set count = (as_timestamp(start_time) - as_timestamp(now())) / 86400 - hours %}
-          {% set day = strptime(start_time, '%Y-%m-%d %H:%M:%S').strftime('%A') 
-          | replace('Monday', 'måndag')
-          | replace('Tuesday', 'tisdag')
-          | replace('Wednesday', 'onsdag')
-          | replace('Thursday', 'torsdag')
-          | replace('Friday', 'fredag')
-          | replace('Saturday', 'lördag')
-          | replace('Sunday', 'söndag') %}
-          {% if count <= 0.0 %}
-            {{'\U0001F4A6'}} Soptömning idag
-          {% elif count <= 1.0 %}
-            Soptömning imorgon
-          {% elif count <= 2.0 %}
-            Soptömning i övermorgon
-          {% else %}
-            Soptömning om {{ (count + hours) | round }} dagar på {{ day }}
-          {% endif %}
+    tpl_occupancy:
+      friendly_name: Någon hemma?
+      icon_template: >-
+        {% if is_state('binary_sensor.tpl.occypancy','on') %}
+          mdi:home-account
+        {% else %}
+          mdi:home-outline
         {% endif %}
+      value_template: "{{ is_state('person.samuel_sjobergsson','home')  or is_state('input_boolean.guest_mode','on')}}"
+
+    ####################################################
+    #                                                  #
+    #                     Alarm                        #
+    #                                                  #
+    ####################################################
+    before_alarm:
+      friendly_name: Innan alarm
+      icon_template: mdi:alarm
+      value_template: "{{ (as_timestamp(states.sensor.samuels_oneplus_next_alarm.state)-1*60) | timestamp_custom('%Y-%m-%d, %H:%M') }}"
+
+    next_alarm_time:
+      friendly_name: Tid för nästa alarm
+      icon_template: mdi:alarm
+      value_template: "{{ as_timestamp(states.sensor.samuels_oneplus_next_alarm.state) | timestamp_custom('%H:%M') }}"
+
+    dagar_till_soptomning:
+      friendly_name: Dagar till soptömning
+      icon_template: >-
+        {% if is_state('sensor.dagar_till_soptomning','0') %}
+          mdi:delete-empty
+        {% else %}
+          mdi:trash-can
+        {% endif %}
+      value_template: "{{ state_attr('sensor.soptomning', 'days') }}"
+
+    ####################################################
+    #                                                  #
+    #                     Media                        #
+    #                                                  #
+    ####################################################
+    trakt_upcoming_title:
+      value_template: >
+        {% set value_json = states.sensor.trakt_upcoming_calendar.attributes.data %}
+        {{ (value_json | from_json)[1].title }} {{ (value_json | from_json)[1].number }}
+    trakt_upcoming_fanart:
+      value_template: >
+        {% set value_json = states.sensor.trakt_upcoming_calendar.attributes.data %}
+        {{ (value_json | from_json)[1].fanart }}
