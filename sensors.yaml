@@ -33,29 +33,28 @@
 #        heading: Korsvägen
 
 #Pollen nivå
-- platform: pollenniva
-  scan_interval: 4
-  sensors:
-    - city: Göteborg
-      days_to_track: 3
-      allergens:
-        - Hassel
-        - Gräs
-        - Alm
-        - Björk
-        - Bok
-        - Ek
-        - Gråbo
-    - city: Jönköping
-      days_to_track: 3
-      allergens:
-        - Hassel
-        - Gräs
-        - Alm
-        - Björk
-        - Bok
-        - Ek
-        - Gråbo
+#- platform: pollenniva
+#  scan_interval: 4
+#  sensors:
+#    - city: Göteborg
+#      days_to_track: 3
+#      allergens:
+#        - Hassel
+#        - Gräs
+#        - Alm
+#        - Björk
+#        - Bok
+#        - Ek
+#        - Gråbo
+#    - city: Jönköping
+#     days_to_track: 3
+#      allergens:
+#       - Hassel
+#       - Gräs
+#       - Alm
+#        - Björk
+#        - Ek
+#        - Gråbo
 
 #HarmonyHub
 #- platform: template
