@@ -71,16 +71,16 @@
       .cards>*:last-child {
         margin-bottom: 4px;
       }
-      @media(max-width: 500px) {
-        .cards:first-child>*,
-        .grid>* {
-          margin-left: 0px;
-        }
-        .cards:last-child>*,
-        .grid>* {
-          margin-right: 0px;
-        }
-      }
+      // @media(max-width: 500px) {
+      //   .cards:first-child>*,
+      //   .grid>* {
+      //     margin-left: 0px;
+      //   }
+      //   .cards:last-child>*,
+      //   .grid>* {
+      //     margin-right: 0px;
+      //   }
+      // }
 
       #staging:not(.grid) {
         visibility: hidden;

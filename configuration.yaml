@@ -184,3 +184,8 @@ browser_mod:
     3803775c_e70cb959:
       name: kitchen_ipad
       camera: true
+
+#Alarm for homekit-infused
+alarm_control_panel:
+  - platform: manual
+    code: !secret alarm_code

@@ -1,13 +1,15 @@
 # Welcome !
 
 This is my Home Assistant installation.
-
+##Information on my homeassistant installation
+[![HA Version](https://img.shields.io/badge/Home%20Assistant--brightgreen)](https://github.com/home-assistant/home-assistant/releases/)
+I'm running Home Assistant OS on a vmware ESXi server
 ## Some statistics about my installation:
 
 Description | value
 -- | --
-Number of entities | 451
-Number of sensors | 271
+Number of entities | 457
+Number of sensors | 274
 
 
 
