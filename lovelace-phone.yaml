@@ -46,8 +46,7 @@ views:
             phone_battery_sensor: sensor.oneplus_a6003_battery_level
             border_color: white
             entities:
-              - entity: sensor.samuel_steps
-              - entity: sensor.inbox
+              - entity: sensor.person_samuel_closest
             hold_action: !include popup/hemma_samuel.yaml
             tap_action: !include popup/hemma_samuel.yaml
 

@@ -654,5 +654,10 @@
     #                                                  #
     ####################################################
     person_samuel_closest:
-      value_template: "{ closest(['states.person.samuel_sjobergsson', group.zones]).name }} is {{ distance(closest(['states.person.samuel_sjobergsson', group.zones])) }} kilometers away."
+      value_template: >
+        {% if distance(closest(['states.person.samuel_sjobergsson', 'group.zones'])) == 0.0 %}
+          {{ closest(['states.person.samuel_sjobergsson', 'group.zones']).name }}
+        {% else %}
+          {{ distance(closest(['states.person.samuel_sjobergsson', 'group.zones'])) }} från {{ closest(['states.person.samuel_sjobergsson', 'group.zones']).name }}
+        {% endif %}
       icon_template: mdi:account
