@@ -326,14 +326,14 @@
         {% set time = now().hour %}
         {% if time <= 1 %} God natt {{'\U0001F611'}}
         {% elif time <= 3 %} God natt {{'\U0001F62A'}}
-        {% elif time <= 5 %} God natt {{'\U0001F634'}}
+        {% elif time <= 5 %} God morgon {{'\U0001F634'}}
         {% elif time <= 7 %} God morgon {{'\U0001F4A9'}}
         {% elif time <= 9 %} God morgon {{'\u2615\uFE0F'}}
-        {% elif time <= 10 %} God morgon {{'\U0001F642'}}
+        {% elif time <= 10 %} God dag {{'\U0001F642'}}
         {% elif time <= 13 %} God dag {{'\U0001F60A'}}
         {% elif time <= 15 %} God dag {{'\U0001F60E'}}
         {% elif time <= 17 %} God dag {{'\U0001F44B\U0001F3FB'}}
-        {% elif time <= 19 %} God kväll {{'\U0001F44B\U0001F3FB'}}
+        {% elif time <= 18 %} God kväll {{'\U0001F44B\U0001F3FB'}}
         {% elif time <= 22 %} God kväll {{'\U0001F60C'}}
         {% elif time <= 23 %} God kväll {{'\U0001F974'}}
         {% else %} God kväll {{'\U0001F974'}}
@@ -374,7 +374,7 @@
         {% if not is_state('sensor.oregontemphygro_228ec_temp', 'unknown') %}
           {% if temperature | float <= 0.0 %}
             Känns som {{ apparent }}° med 
-            {{ precip }}% risk för snö {{'\u2744\uFE0F'}}
+            {{ precip }}% chans för snö {{'\u2744\uFE0F'}}
           {% elif temperature | float > 0.0 %} 
             Känns som {{ apparent}}° med 
             {{ precip }}% risk för regn {{ '\u2614\uFE0F' if precip > 30 }}
@@ -398,6 +398,14 @@
     sidebar_dagenscitat:
       friendly_name: Dagens citat
       value_template: "{{ states.sensor.dagens_citat.attributes.entries[0].summary }}"
+
+    sidebar_namnsdagar:
+      friendly_name: Dagens namnsdagar
+      value_template: "I dag har {{ states.sensor.swedish_calendar_name_day.state | regex_replace(find=',', replace=' och ', ignorecase=False) }} namnsdag"
+
+    sidebar_temadagar:
+      friendly_name: Dagens temadagar
+      value_template: "{{ states.sensor.swedish_calendar_theme_day.state | regex_replace(find=',', replace=',<br>', ignorecase=False) }}"
 
     garbage_disposal:
       friendly_name: Soptömning
@@ -629,3 +637,13 @@
       value_template: >
         {% set value_json = states.sensor.trakt_upcoming_calendar.attributes.data %}
         {{ (value_json | from_json)[1].fanart }}
+
+    ####################################################
+    #                                                  #
+    #                     Power                        #
+    #                                                  #
+    ####################################################
+    greenely_last_day:
+      value_template: "{{state_attr('sensor.greenely_usage', 'days')[0].usage}}"
+      icon_template: mdi:power-socket-eu
+      unit_of_measurement: kWh

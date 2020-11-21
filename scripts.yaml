@@ -15,6 +15,7 @@ home_arrive:
     - service: light.turn_on
       data:
         profile: relax
+        brightness: 80
       entity_id: light.upstairs_lights
   mode: single
 lights_at_dark:
@@ -28,7 +29,9 @@ lights_at_dark:
       entity_id: sensor.tpl_occupancy
       state: "True"
     - service: light.turn_on
-      entity_id: light.upstairs_lights
+      data:
+        entity_id: light.upstairs_lights
+        brightness: 80
   mode: single
 lights_at_sunrise:
   alias: lights_at_sunrise
@@ -42,6 +45,7 @@ lights_at_sunrise:
       state: "False"
     - service: light.turn_off
       entity_id: light.upstairs_lights
+
   mode: single
 morning_samuel:
   alias: Morning-samuel

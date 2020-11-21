@@ -11,3 +11,13 @@ light.vardagsrum_fonster_framsida:
   friendly_name: TV-room towards stairs
 light.vardagsrum_fonster_kortsida:
   friendly_name: Office wall lights
+sensor.xiron_3301_temp:
+  friendly_name: Living_room_temp
+sensor.xiron_3301_bat:
+  friendly_name: Living_room_bat
+sensor.xiron_3301_update_time:
+  friendly_name: Living_room_update_time
+light.bedroom_lamp_samuel:
+  friendly_name: Bedroom lamp Samuel
+sensor.oregontemphygro_228ec_hstatus:
+  friendly_name: outside_hstatus

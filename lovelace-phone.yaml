@@ -41,15 +41,13 @@ views:
           #                                               #
           #################################################
 
-          - type: picture-glance
-            title: Samuel
-            image: >-
-              https://sjobergssonsteknik.se/wp-content/uploads/2020/10/40326619_10212851947350469_3732937221494276096_o.jpg
+          - type: "custom:person-card"
+            person: person.samuel_sjobergsson
+            phone_battery_sensor: sensor.oneplus_a6003_battery_level
+            border_color: white
             entities:
-              - entity: person.samuel_sjobergsson
-                show_state: true
-              - entity: sensor.oneplus_a6003_battery_level
-                show_state: true
+              - entity: sensor.samuel_steps
+              - entity: sensor.inbox
             hold_action: !include popup/hemma_samuel.yaml
             tap_action: !include popup/hemma_samuel.yaml
 
@@ -91,6 +89,9 @@ views:
 
 
               <b>{{states('sensor.garbage_disposal') }}</b>
+
+
+              <b>{{states('sensor.sidebar_dagenscitat')}}</b>
 
               {% if is_state('binary_sensor.google', 'off') %}
               {{'\u26A0\uFE0F'}} Kontrollera internetåtkomst{% endif %}
@@ -136,13 +137,12 @@ views:
                   width: 47.7%
                 template: media
 
-          - type: custom:layout-card
-            layout: vertical
-            column_num: 3
+          - type: grid
+            columns: 3
             cards:
               - type: custom:button-card
                 entity: light.living_room_lights
-                name: Fönsterlampor
+                name: Vardagsrum fönsterlampor
                 style:
                   top: 23.9%
                   left: 23.8%
@@ -158,11 +158,28 @@ views:
                     icon_lamp:
                       [top: 11%, left: 4.5%, width: 10.05vw, position: absolute]
                 template: light
+              - type: custom:button-card
+                entity: sensor.tunex_b301_temp
+                name: Vardagsrum
+                custom_fields:
+                  icon_lamp: >
+                    <ha-icon icon="mdi:fireplace-off"></ha-icon>
+                styles: *icon_lamp_styles
+                template: base
+                tap-action:
+                  action: more-info
 
-              - break
               - type: custom:button-card
                 entity: light.kitchen_room_lights
                 name: Kökslampor
+                custom_fields:
+                  icon_lamp: *icon_lamp
+                styles: *icon_lamp_styles
+                template: light
+
+              - type: custom:button-card
+                entity: light.dining_room_wall_light
+                name: Matsal vägglampor
                 custom_fields:
                   icon_lamp: *icon_lamp
                 styles: *icon_lamp_styles
@@ -179,10 +196,30 @@ views:
                 tap-action:
                   action: more-info
 
-              - break
-          - type: custom:layout-card
-            layout: vertical
-            column_num: 3
+              - type: custom:button-card
+                entity: sensor.kitchen
+                name: Kök
+                custom_fields:
+                  icon_lamp: >
+                    <ha-icon icon="mdi:stove"></ha-icon>
+                styles: *icon_lamp_styles
+                template: base
+                tap-action:
+                  action: more-info
+
+              - type: custom:button-card
+                entity: sensor.dining_room
+                name: Matsal
+                custom_fields:
+                  icon_lamp: >
+                    <ha-icon icon="mdi:table-furniture"></ha-icon>
+                styles: *icon_lamp_styles
+                template: base
+                tap-action:
+                  action: more-info
+
+          - type: grid
+            columns: 3
             cards:
               #################################################
               #                                               #
@@ -198,7 +235,16 @@ views:
                 styles: *icon_lamp_styles
                 template: light
 
-              - break
+              - type: custom:button-card
+                entity: sensor.bedroom
+                name: Sovrum
+                custom_fields:
+                  icon_lamp: >
+                    <ha-icon icon="mdi:bed"></ha-icon>
+                styles: *icon_lamp_styles
+                template: base
+                tap-action:
+                  action: more-info
 
               #################################################
               #                                               #
@@ -214,8 +260,6 @@ views:
                     <ha-icon icon="mdi:led-variant-outline"></ha-icon>
                 styles: *icon_lamp_styles
                 template: light
-
-              - break
 
               #################################################
               #                                               #
@@ -238,7 +282,7 @@ views:
 
               - type: custom:button-card
                 entity: sensor.tunex_2801_temp
-                name: "Kontor temperatur"
+                name: "Kontor"
                 custom_fields:
                   icon_lamp: >
                     <ha-icon icon="mdi:thermometer"></ha-icon>

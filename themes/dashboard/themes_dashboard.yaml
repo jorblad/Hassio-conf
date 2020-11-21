@@ -228,7 +228,7 @@ tablet:
 
       ha-card.type-custom-hui-markdown-card {
         font-family: SF Display;
-        line-height: 2.05vw;
+        line-height: 1.85vw;
         letter-spacing: 0.06vw;
         color: rgba(255, 255, 255, 0.9);
         pointer-events: none;
@@ -354,10 +354,10 @@ tablet:
         opacity: 1;
       }
 
-  # card-mod-glance: |
-  #   :host {
-  #     --paper-item-icon-color: {{ '#3182b7' if is_state(config.entity, 'home') else '#FFFFFF20' }};
-  #   }
+  card-mod-glance: |
+    :host {
+      --paper-item-icon-color: {{ '#3182b7' if is_state(config.entity, 'home') else '#FFFFFF20' }};
+    }
 
   card-mod-more-info-yaml: |
     .: |

@@ -2,11 +2,11 @@
   automatic_add: true
   devices:
     newkaku_01718f56_10:
-      name: TV-room LED slinga
-      type: switchable
-    newkaku_0171856_e:
       name: Lampa 1
       type: switchable
+    newkaku_0171856_e:
+      name: TV-room LED slinga
+      type: dimmable
     newkaku_0171856_f:
       name: Lampa 2
       type: switchable

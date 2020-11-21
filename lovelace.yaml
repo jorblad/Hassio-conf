@@ -110,10 +110,16 @@ views:
               <b>{{ states('sensor.sidebar_greeting') }}</b>
 
 
-              <b>{{ states('sensor.sidebar_active') }}</b>
+              <b>{{ states('sensor.sidebar_namnsdagar') }}</b>
+
+
+              <b>{{ states('sensor.swedish_calendar_theme_day') }}</b>
 
 
               <b>{{ states('sensor.sidebar_weather') }}</b>
+
+
+              <b>{{ states('sensor.sidebar_active') }}</b>
 
 
               <b>{{states('sensor.garbage_disposal') }}</b>
@@ -121,16 +127,6 @@ views:
               {% if is_state('binary_sensor.google', 'off') %}
               {{'\u26A0\uFE0F'}} Kontrollera internetåtkomst{% endif %}
               </font>
-          - type: "custom:atomic-calendar-revive"
-            class: sidebar
-            style: { top: 60%, left: 11.1% }
-            maxEventCount: 2
-            showLocation: false
-            hoursFormat: 24h
-            sortByStartTime: true
-            entities:
-              - entity: calendar.kalender
-              - entity: calendar.samster9312_gmail_com
 
           #################################################
           #                                               #
@@ -675,6 +671,16 @@ views:
               top: 53.4%
               left: 50.2%
               <<: *title-style
+            cards:
+              - type: "custom:atomic-calendar-revive"
+                style: { top: 64.5%, left: 55.18% }
+                maxEventCount: 2
+                showLocation: false
+                hoursFormat: 24h
+                sortByStartTime: true
+                entities:
+                  - entity: calendar.kalender
+                  - entity: calendar.samster9312_gmail_com
 
           #################################################
           #                                               #

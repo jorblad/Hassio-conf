@@ -2,11 +2,11 @@ homeassistant:
   legacy_templates: false
   allowlist_external_dirs:
     - "/config/"
-#latitude: !secret latitude
-#longitude: !secret longitude
-#elevation: 311
-# Customization file
-#customize: !include customize.yaml
+  #latitude: !secret latitude
+  #longitude: !secret longitude
+  #elevation: 311
+  # Customization file
+  customize: !include customize.yaml
 
 readme:
 
@@ -22,10 +22,16 @@ lovelace:
   dashboards:
     lovelace-yaml:
       mode: yaml
-      title: Lovelace-tablet
+      title: Lovelace-tablet-1
       icon: mdi:tablet
       show_in_sidebar: true
       filename: lovelace.yaml
+    lovelace-tablet:
+      mode: yaml
+      title: Lovelace-tablet
+      icon: mdi:tablet
+      show_in_sidebar: true
+      filename: lovelace-tablet.yaml
     lovelace-phone:
       mode: yaml
       title: Lovelace-phone
@@ -189,3 +195,12 @@ browser_mod:
 alarm_control_panel:
   - platform: manual
     code: !secret alarm_code
+
+
+#Emulated hue
+emulated_hue:
+  listen_port: 80
+  off_maps_to_on_domains:
+    - script
+    - scene
+  expose_by_default: true

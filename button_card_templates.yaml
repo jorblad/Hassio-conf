@@ -57,7 +57,7 @@ person:
   template: ["base"]
   show_entity_picture: true
   state_display: >
-    [[[ return entity.state === 'home' ? 'Ja' : 'Nej'; ]]]
+    [[[ return entity.state === 'home' ? 'Hemma' : entity.state; ]]]
   state:
     - value: "home"
       styles:
