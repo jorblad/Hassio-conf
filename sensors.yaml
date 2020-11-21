@@ -647,3 +647,12 @@
       value_template: "{{state_attr('sensor.greenely_usage', 'days')[0].usage}}"
       icon_template: mdi:power-socket-eu
       unit_of_measurement: kWh
+
+    ####################################################
+    #                                                  #
+    #                    Persons                       #
+    #                                                  #
+    ####################################################
+    person_samuel_closest:
+      value_template: "{ closest(['states.person.samuel_sjobergsson', group.zones]).name }} is {{ distance(closest(['states.person.samuel_sjobergsson', group.zones])) }} kilometers away."
+      icon_template: mdi:account

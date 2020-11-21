@@ -2,3 +2,9 @@ Adults:
   name: Adults
   entities:
     - person.samuel_sjobergsson
+Zones:
+  name: Zones
+  entities:
+    - zone.home
+    - zone.jobb
+    - zone.kyrkan
