@@ -47,7 +47,12 @@
 
     sidebar_show_quote_of_the_day:
       value_template: >
-        {{}}
+        {% set x = states('sensor.sidebar_dagenscitat') %}
+        {% if x | length < 60 %}
+          True
+        {% else %}
+          False
+        {% endif %}
 
 #Command_line
 - platform: command_line
