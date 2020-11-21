@@ -373,10 +373,10 @@
         {% set precip = states('sensor.weather_precprob') | round %}
         {% if not is_state('sensor.oregontemphygro_228ec_temp', 'unknown') %}
           {% if temperature | float <= 0.0 %}
-            Känns som {{ apparent }}° med 
+            Det är {{ temperature }}° men känns som {{ apparent }}° med 
             {{ precip }}% chans för snö {{'\u2744\uFE0F'}}
           {% elif temperature | float > 0.0 %} 
-            Känns som {{ apparent}}° med 
+            Det är {{ temperature }}° men känns som {{ apparent}}° med 
             {{ precip }}% risk för regn {{ '\u2614\uFE0F' if precip > 30 }}
           {% endif %}
         {% else %}
