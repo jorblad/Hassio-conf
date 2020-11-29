@@ -110,7 +110,10 @@ views:
                   <b>{{ states('sensor.sidebar_namnsdagar') }}</b>
 
 
-                  <b>{{ states('sensor.sidebar_temadagar') }}</b>
+                  {% if is_state('sensor.sidebar_temadagar', 'unknown') %}
+                  {% else %}
+                  <b>{{states('sensor.sidebar_temadagar') }}</b>
+                  {% endif %}
 
 
                   <b>{{ states('sensor.sidebar_weather') }}</b>
@@ -280,6 +283,21 @@ views:
                           ]
                     template: light
 
+                  - type: conditional
+                    conditions:
+                      - entity: input_boolean.julbelysning
+                        state: "on"
+                    card:
+                      type: custom:button-card
+                      entity: light.ljusstake_vardagsrum
+                      name: Adventsljusstake
+                      style:
+                        width: 10%
+                      custom_fields:
+                        icon_lamp: *icon_lamp
+                      styles: *icon_lamp_styles
+                      template: light
+
                   - type: custom:button-card
                     entity: sensor.tunex_b301_temp
                     name: Vardagsrum
@@ -352,6 +370,21 @@ views:
                       icon_lamp: *icon_lamp
                     styles: *icon_lamp_styles
                     template: light
+
+                  - type: conditional
+                    conditions:
+                      - entity: input_boolean.julbelysning
+                        state: "on"
+                    card:
+                      type: custom:button-card
+                      entity: switch.tradfri_outlet
+                      name: Adventsljusstake
+                      style:
+                        width: 10%
+                      custom_fields:
+                        icon_lamp: *icon_lamp
+                      styles: *icon_lamp_styles
+                      template: light
 
                   - type: custom:button-card
                     entity: sensor.kitchen
@@ -479,6 +512,22 @@ views:
                       icon_lamp: *icon_lamp
                     styles: *icon_lamp_styles
                     template: light
+
+                  - type: conditional
+                    conditions:
+                      - entity: input_boolean.julbelysning
+                        state: "on"
+                    card:
+                      type: custom:button-card
+                      entity: light.sovrum_fonster
+                      name: Stjärna i fönstret
+                      style:
+                        width: 10%
+                      custom_fields:
+                        icon_lamp: >
+                          <ha-icon icon="mdi:hexagram-outline"></ha-icon>
+                      styles: *icon_lamp_styles
+                      template: light
 
                   - type: custom:button-card
                     entity: sensor.bedroom

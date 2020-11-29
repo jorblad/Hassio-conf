@@ -45,13 +45,29 @@
           {{ 'false' if ((as_timestamp(published) - as_timestamp(now())) / 86400) <= -0.5 else 'true' }}
         {% endif %}
 
+    #Sidebar
     sidebar_show_quote_of_the_day:
       value_template: >
         {% set x = states('sensor.sidebar_dagenscitat') %}
-        {% if x | length < 60 %}
-          True
+        {% if x | length < 100 %}
+          on
         {% else %}
-          False
+          off
+        {% endif %}
+    #Weather
+    #daylight
+    daylight:
+      value_template: >
+        {% if (states.sun.sun.attributes.elevation | int > 5) %}true
+          {% elif ( (states.sun.sun.attributes.elevation | int > 8) and (state_attr('weather.smhi_smedsas_skogslund', 'cloudiness') | int > 40)) %}true
+          {% elif (state_attr('weather.smhi_smedsas_skogslund', 'cloudiness') | int > 80) %}true
+          {% else %}false
+        {% endif %}
+      icon_template: >
+        {% if (states.sun.sun.attributes.elevation | int > 5) %}mdi:weather-sunset-up
+          {% elif ( (states.sun.sun.attributes.elevation | int > 8) and (state_attr('weather.smhi_smedsas_skogslund', 'cloudiness') | int > 40)) %}mdi:weather-sunset-up
+          {% elif (state_attr('weather.smhi_smedsas_skogslund', 'cloudiness') | int > 80) %}mdi:weather-sunset-up
+          {% else %}mdi:weather-night
         {% endif %}
 
 #Command_line

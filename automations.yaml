@@ -1,296 +1,296 @@
 - id: be1d18d8050e40b794bd8e5adc89fe9d
   alias: light on at sunset
   trigger:
-  - event: sunset
-    offset: '-1:00:00'
-    platform: sun
-  condition:
-  - before: '21:00'
-    condition: time
+    - platform: state
+      entity_id: binary_sensor.daylight
+      to: "off"
   action:
-  - service: script.turn_on
-    entity_id: script.lights_at_dark
+    - service: script.turn_on
+      entity_id: script.lights_at_dark
   mode: single
 - id: e069721d12524a4b98ac78409a93af01
   alias: light off at sunrise
   trigger:
-  - event: sunrise
-    offset: 01:30:00
-    platform: sun
+    - platform: state
+      entity_id: binary_sensor.daylight
+      to: "on"
   action:
-  - entity_id: script.lights_at_sunrise
-    service: script.turn_on
+    - entity_id: script.lights_at_sunrise
+      service: script.turn_on
   mode: single
 - id: 4c8aa6175c9043318ffe52c374ea8e91
-  alias: '[Misc] Update OpenUV every 30 minutes during the daytime'
+  alias: "[Misc] Update OpenUV every 30 minutes during the daytime"
   trigger:
-  - hours: /1
-    platform: time_pattern
+    - hours: /1
+      platform: time_pattern
   condition:
-  - after: sunrise
-    before: sunset
-    condition: sun
+    - after: sunrise
+      before: sunset
+      condition: sun
   action:
-  - service: openuv.update_uv_index_data
-  - data: {}
-    service: openuv.update_protection_data
+    - service: openuv.update_uv_index_data
+    - data: {}
+      service: openuv.update_protection_data
   mode: single
-- id: '1558348853012'
+- id: "1558348853012"
   alias: Lights off when not home
   trigger:
-  - at: '22:00:00'
-    platform: time
+    - at: "22:00:00"
+      platform: time
   condition:
-  - condition: state
-    entity_id: group.adults
-    state: not_home
+    - condition: state
+      entity_id: group.adults
+      state: not_home
   action:
-  - service: script.turn_on
-    entity_id: script.night
+    - service: script.turn_on
+      entity_id: script.night
   mode: single
-- id: '1559911216570'
-  alias: '[Backup] NightlyBackup'
+- id: "1559911216570"
+  alias: "[Backup] NightlyBackup"
   trigger:
-  - at: 02:32:00
-    platform: time
+    - at: 02:32:00
+      platform: time
   condition: []
   action:
-  - service: hassio.snapshot_full
+    - service: hassio.snapshot_full
   mode: single
-- id: '1601629157633'
-  alias: '[Backup] Backup-everyday'
-  description: ''
+- id: "1601629157633"
+  alias: "[Backup] Backup-everyday"
+  description: ""
   trigger:
-  - platform: time
-    at: 04:00:00
+    - platform: time
+      at: 04:00:00
   condition: []
   action:
-  - service: hassio.addon_stdin
-    data:
-      addon: 7be23ff5_dropbox_sync
-      input:
-        command: upload
+    - service: hassio.addon_stdin
+      data:
+        addon: 7be23ff5_dropbox_sync
+        input:
+          command: upload
   mode: single
-- id: '1603713761176'
-  alias: '[Bedroom] Wake up Samuel!'
-  description: ''
+- id: "1603713761176"
+  alias: "[Bedroom] Wake up Samuel!"
+  description: ""
   trigger:
-  - platform: template
-    value_template: '{{ states(''sensor.date_time'') == states(''sensor.before_alarm'')
-      }}'
+    - platform: template
+      value_template:
+        "{{ states('sensor.date_time') == states('sensor.before_alarm')
+        }}"
   condition:
-  - condition: state
-    entity_id: input_boolean.zzz_helpers_samuels_alarm_triggered_today
-    state: 'off'
+    - condition: state
+      entity_id: input_boolean.zzz_helpers_samuels_alarm_triggered_today
+      state: "off"
   action:
-  - service: script.turn_on
-    data: {}
-    entity_id: script.morning_samuel
+    - service: script.turn_on
+      data: {}
+      entity_id: script.morning_samuel
   mode: single
-- id: '1603716680056'
-  alias: '[Misc] Reset helper booleans at night'
-  description: ''
+- id: "1603716680056"
+  alias: "[Misc] Reset helper booleans at night"
+  description: ""
   trigger:
-  - platform: time
-    at: 00:30
+    - platform: time
+      at: 00:30
   condition: []
   action:
-  - service: input_boolean.turn_off
-    data: {}
-    entity_id: input_boolean.zzz_helpers_samuels_alarm_triggered_today
+    - service: input_boolean.turn_off
+      data: {}
+      entity_id: input_boolean.zzz_helpers_samuels_alarm_triggered_today
   mode: single
-- id: '1603981159406'
+- id: "1603981159406"
   alias: Leaving the house
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: sensor.tpl_occupancy
-    to: 'False'
+    - platform: state
+      entity_id: sensor.tpl_occupancy
+      to: "False"
   condition: []
   action:
-  - service: script.turn_on
-    data: {}
-    entity_id: script.home_leave
+    - service: script.turn_on
+      data: {}
+      entity_id: script.home_leave
   mode: single
 - alias: krisinformation_visibility
   initial_state: true
   trigger:
-  - platform: state
-    entity_id: binary_sensor.krisinformation_time_trigger
+    - platform: state
+      entity_id: binary_sensor.krisinformation_time_trigger
   action:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.krisinformation_time_trigger
-        state: 'on'
-      sequence:
-      - service: input_boolean.turn_on
-        entity_id: input_boolean.krisinformation_visibility
-    default:
-    - service: input_boolean.turn_off
-      entity_id: input_boolean.krisinformation_visibility
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: binary_sensor.krisinformation_time_trigger
+              state: "on"
+          sequence:
+            - service: input_boolean.turn_on
+              entity_id: input_boolean.krisinformation_visibility
+      default:
+        - service: input_boolean.turn_off
+          entity_id: input_boolean.krisinformation_visibility
   id: 6720dcf073bd489c9ce3d27897171f65
 - alias: conditional_media_playing
   initial_state: true
   mode: restart
   trigger:
-  - platform: state
-    entity_id:
-    - media_player.spotify_samuel_sjobergsson
-    - media_player.master_bedroom_speaker
-    - media_player.tv
-    to: playing
+    - platform: state
+      entity_id:
+        - media_player.spotify_samuel_sjobergsson
+        - media_player.master_bedroom_speaker
+        - media_player.tv
+      to: playing
   action:
-  - service: input_select.select_option
-    data:
-      entity_id: input_select.conditional_media
-      option: '{{ trigger.to_state.name }}
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.conditional_media
+        option: "{{ trigger.to_state.name }}
 
-        '
+          "
   id: 323aa36792504b94a09442839db514e7
 - alias: conditional_media_paused_idle
   initial_state: true
   mode: restart
   trigger:
-  - platform: state
-    entity_id:
-    - media_player.spotify_samuel_sjobergsson
-    - media_player.master_bedroom_speaker
-    - media_player.tv
-    to:
-    - 'off'
-    - idle
-    - standby
-  - platform: state
-    entity_id:
-    - media_player.spotify_samuel_sjobergsson
-    - media_player.master_bedroom_speaker
-    - media_player.tv
-    to: paused
-    for:
-      minutes: 10
+    - platform: state
+      entity_id:
+        - media_player.spotify_samuel_sjobergsson
+        - media_player.master_bedroom_speaker
+        - media_player.tv
+      to:
+        - "off"
+        - idle
+        - standby
+    - platform: state
+      entity_id:
+        - media_player.spotify_samuel_sjobergsson
+        - media_player.master_bedroom_speaker
+        - media_player.tv
+      to: paused
+      for:
+        minutes: 10
   action:
-  - service: input_select.select_option
-    data:
-      entity_id: input_select.conditional_media
-      option: "{% set media_players = \n  [states.media_player.spotify_samuel_sjobergsson,\
-        \ states.media_player.master_bedroom_speaker, \n    states.media_player.tv]\
-        \ %}\n{% if media_players | selectattr('state','eq','playing') | list | count\
-        \ == 0 %}\n  {% if media_players | selectattr('state','eq','paused') | list\
-        \ | count == 0 %}\n  Senast nedladdat\n  {% else %}\n  {{ media_players |\
-        \ selectattr('state','eq','paused') | map(attribute='name') | max }}\n  {%\
-        \ endif %}\n{% else %} {{ media_players | selectattr('state','eq','playing')\
-        \ | map(attribute='name') | max }} {% endif %}\n"
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.conditional_media
+        option:
+          "{% set media_players = \n  [states.media_player.spotify_samuel_sjobergsson,\
+          \ states.media_player.master_bedroom_speaker, \n    states.media_player.tv]\
+          \ %}\n{% if media_players | selectattr('state','eq','playing') | list | count\
+          \ == 0 %}\n  {% if media_players | selectattr('state','eq','paused') | list\
+          \ | count == 0 %}\n  Senast nedladdat\n  {% else %}\n  {{ media_players |\
+          \ selectattr('state','eq','paused') | map(attribute='name') | max }}\n  {%\
+          \ endif %}\n{% else %} {{ media_players | selectattr('state','eq','playing')\
+          \ | map(attribute='name') | max }} {% endif %}\n"
   id: 25473fb71c28430187149fe6b6ad2a4e
 - alias: conditional_media_all_off
   initial_state: true
   trigger:
-  - platform: template
-    value_template: '{{ is_state(''media_player.spotify_samuel_sjobergsson'', ''idle'')
-      and is_state(''media_player.master_bedroom_speaker'', ''idle'') and is_state(''media_player.tv'',
-      ''standby'') or is_state(''media_player.tv'', ''off'') and is_state(''media_player.master_bedroom_speaker'',
-      ''off'') }}
+    - platform: template
+      value_template:
+        "{{ is_state('media_player.spotify_samuel_sjobergsson', 'idle')
+        and is_state('media_player.master_bedroom_speaker', 'idle') and is_state('media_player.tv',
+        'standby') or is_state('media_player.tv', 'off') and is_state('media_player.master_bedroom_speaker',
+        'off') }}
 
-      '
+        "
   action:
-  - service: input_select.select_option
-    data:
-      entity_id: input_select.conditional_media
-      option: Senast nedladdat
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.conditional_media
+        option: Senast nedladdat
   id: 8a4bbefe7a4e424b83dfcb57df4ad9ea
-- id: '1604259840797'
+- id: "1604259840797"
   alias: Arriving home
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: sensor.tpl_occupancy
-    to: 'True'
+    - platform: state
+      entity_id: sensor.tpl_occupancy
+      to: "True"
   condition: []
   action:
-  - service: script.turn_on
-    data: {}
-    entity_id: script.home_arrive
+    - service: script.turn_on
+      data: {}
+      entity_id: script.home_arrive
   mode: single
 - alias: hacs_version_grep
   initial_state: true
   trigger:
-  - platform: state
-    entity_id: sensor.hacs
+    - platform: state
+      entity_id: sensor.hacs
   action:
-  - service: homeassistant.update_entity
-    entity_id: sensor.hacs_version
+    - service: homeassistant.update_entity
+      entity_id: sensor.hacs_version
   mode: single
   id: 474a0f5648914d9e9d77551ab3c3b039
 - alias: update_hass_release_notes
   initial_state: true
   trigger:
-  - platform: state
-    entity_id:
-    - sensor.hass_version_latest
-    - sensor.hass_version_latest_beta
+    - platform: state
+      entity_id:
+        - sensor.hass_version_latest
+        - sensor.hass_version_latest_beta
   action:
-  - service: homeassistant.update_entity
-    entity_id:
-    - sensor.hass_release_notes
-    - sensor.hass_release_notes_rc
+    - service: homeassistant.update_entity
+      entity_id:
+        - sensor.hass_release_notes
+        - sensor.hass_release_notes_rc
   mode: single
   id: 793aa254f90a490ea31f05925065f85f
 - alias: phone_notify_hass_rc
   initial_state: true
   trigger:
-  - platform: state
-    entity_id: sensor.hass_version_latest_beta
+    - platform: state
+      entity_id: sensor.hass_version_latest_beta
   condition:
-  - condition: state
-    entity_id: sensor.hass_dev_release
-    state:
-    - Idag
-    - Släppt
+    - condition: state
+      entity_id: sensor.hass_dev_release
+      state:
+        - Idag
+        - Släppt
   action:
-  - service: notify.mobile_app_samuels_oneplus
-    data:
-      title: RC {{ states(trigger.entity_id) }} tillgänglig
-      message: En ny beta-version finns tillgänglig
+    - service: notify.mobile_app_samuels_oneplus
       data:
-        actions:
-        - action: URI
-          title: Läs release notes
-          uri: https://rc.home-assistant.io/latest-release-notes/
+        title: RC {{ states(trigger.entity_id) }} tillgänglig
+        message: En ny beta-version finns tillgänglig
+        data:
+          actions:
+            - action: URI
+              title: Läs release notes
+              uri: https://rc.home-assistant.io/latest-release-notes/
   mode: single
   id: ced383f0e99941c9b6d0b2c5b921f259
 - alias: phone_notify_hass_update
   initial_state: true
   trigger:
-  - platform: state
-    entity_id: sensor.hass_version
+    - platform: state
+      entity_id: sensor.hass_version
   condition:
     condition: not
     conditions:
-    - condition: state
-      entity_id: sensor.hass_version
-      state: Senaste
+      - condition: state
+        entity_id: sensor.hass_version
+        state: Senaste
   action:
-  - service: notify.mobile_app_samuels_oneplus
-    data:
-      title: '{{ states(trigger.entity_id) }} tillgänglig {{ ''\U0001F389'' }} '
-      message: Ny uppdatering för homeassistant finns nu tillgänglig
+    - service: notify.mobile_app_samuels_oneplus
       data:
-        actions:
-        - action: URI
-          title: Läs release notes
-          uri: https://www.home-assistant.io/latest-release-notes/
+        title: '{{ states(trigger.entity_id) }} tillgänglig {{ ''\U0001F389'' }} '
+        message: Ny uppdatering för homeassistant finns nu tillgänglig
+        data:
+          actions:
+            - action: URI
+              title: Läs release notes
+              uri: https://www.home-assistant.io/latest-release-notes/
   mode: single
   id: a06415b968044e929d2014fa6232ab4d
-- id: '1605041826359'
+- id: "1605041826359"
   alias: GithubPush
-  description: ''
+  description: ""
   trigger:
-  - platform: time
-    at: 04:34
+    - platform: time
+      at: 04:34
   condition: []
   action:
-  - service: hassio.addon_stdin
-    data:
-      addon: a0d7b954_ssh
-      input: /config/ha_gitpush.sh
+    - service: hassio.addon_stdin
+      data:
+        addon: a0d7b954_ssh
+        input: /config/ha_gitpush.sh
   mode: single

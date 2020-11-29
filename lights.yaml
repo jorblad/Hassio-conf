@@ -2,7 +2,7 @@
   automatic_add: true
   devices:
     newkaku_01718f56_10:
-      name: Lampa 1
+      name: Ljusstake Vardagsrum
       type: switchable
     newkaku_0171856_e:
       name: TV-room LED slinga

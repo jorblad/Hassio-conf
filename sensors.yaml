@@ -515,6 +515,15 @@
         {{- HI_C|round(1) -}}
       unit_of_measurement: "°C"
 
+    #Sun elevation
+    ambient_light:
+      value_template: >
+        {{ "%.2f"|format((states.sun.sun.attributes.elevation/5)*((states.sun.sun.attributes.elevation/5)+(2-(state_attr('weather.smhi_smedsas_skogslund', 'cloudiness')|int/100 )))) }}
+      icon_template: mdi:weather-sunset-up
+
+    sun_elevation:
+      value_template: "{{ states.sun.sun.attributes.elevation }}"
+
     ####################################################
     #                                                  #
     #                     System                       #
