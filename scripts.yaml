@@ -45,6 +45,8 @@ lights_at_sunrise:
 morning_samuel:
   alias: Morning-samuel
   sequence:
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.samuel_sleeping
     - service: light.turn_on
       data:
         transition: 60
@@ -57,6 +59,8 @@ morning_samuel:
 night:
   alias: Night
   sequence:
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.samuel_sleeping
     - service: light.turn_off
       entity_id: light.bedroom_lamp_samuel
     - service: light.turn_off
