@@ -61,7 +61,7 @@ lights_at_dark:
             - service: light.turn_on
               entity_id: light.ljusstake_vardagsrum
             - service: switch.turn_on
-              entity_id: switch.tradfri_outlet
+              entity_id:  switch.on_off_plug_in_unit_7
         #Någon hemma och inte jul
         - conditions:
             - condition: state
@@ -91,7 +91,7 @@ lights_at_dark:
             - service: light.turn_on
               entity_id: light.ljusstake_vardagsrum
             - service: switch.turn_on
-              entity_id: switch.tradfri_outlet
+              entity_id:  switch.on_off_plug_in_unit_7
     - service: light.turn_on
       data:
         entity_id: light.downstairs_light
@@ -138,7 +138,7 @@ lights_at_sunrise:
             - service: light.turn_off
               entity_id: light.ljusstake_vardagsrum
             - service: switch.turn_off
-              entity_id: switch.tradfri_outlet
+              entity_id:  switch.on_off_plug_in_unit_7
         #Någon hemma och inte jul
         - conditions:
             - condition: state
@@ -166,7 +166,7 @@ lights_at_sunrise:
             - service: light.turn_off
               entity_id: light.ljusstake_vardagsrum
             - service: switch.turn_off
-              entity_id: switch.tradfri_outlet
+              entity_id: switch.on_off_plug_in_unit_7
   mode: single
 morning_samuel:
   alias: Morning-samuel
@@ -178,7 +178,7 @@ morning_samuel:
         transition: 60
         profile: energize
         brightness: 80
-        entity_id: light.bedroom_lamp_samuel
+        entity_id: light.color_temperature_light_3
     - service: light.turn_on
       entity_id: light.sovrum_fonster
   mode: single
@@ -188,7 +188,7 @@ night:
     - service: input_boolean.turn_on
       entity_id: input_boolean.samuel_sleeping
     - service: light.turn_off
-      entity_id: light.bedroom_lamp_samuel
+      entity_id: light.color_temperature_light_3
     - service: light.turn_off
       entity_id: light.sovrum_fonster
     - condition: state

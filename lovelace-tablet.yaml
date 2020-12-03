@@ -352,7 +352,7 @@ views:
                   #################################################
 
                   - type: custom:button-card
-                    entity: light.kitchen_window
+                    entity: light.dimmable_light_8
                     name: Köksfönster
                     style:
                       width: 10%
@@ -377,7 +377,7 @@ views:
                         state: "on"
                     card:
                       type: custom:button-card
-                      entity: switch.tradfri_outlet
+                      entity: switch.on_off_plug_in_unit_7
                       name: Adventsljusstake
                       style:
                         width: 10%
@@ -504,7 +504,7 @@ views:
                   #################################################
 
                   - type: custom:button-card
-                    entity: light.bedroom_lamp_samuel
+                    entity: light.color_temperature_light_3
                     name: Sänglampa Samuel
                     style:
                       width: 10%

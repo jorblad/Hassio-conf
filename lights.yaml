@@ -22,23 +22,40 @@
 - platform: group
   name: Upstairs lights
   entities:
-    - light.bedroom_lamp_samuel
+    - light.color_temperature_light_3
     - light.office_wall_lights
     - light.tv_room_led_slinga
 - platform: group
   name: Downstairs lights
   entities:
-    - light.living_room_front
-    - light.living_room_side
-    - light.kitchen_window
+    - light.color_temperature_light_4
+    - light.color_temperature_light_5
+    - light.dimmable_light_8
     - light.dining_room_wall_light
 - platform: group
   name: Living room lights
   entities:
-    - light.living_room_front
-    - light.living_room_side
+    - light.color_temperature_light_4
+    - light.color_temperature_light_5
 - platform: group
   name: Kitchen room lights
   entities:
-    - light.kitchen_window
+    - light.dimmable_light_8
     - light.dining_room_wall_light
+
+- platform: group
+  name: Christmas lights
+  entities:
+    - light.ljusstake_vardagsrum
+    - light.sovrum_fonster
+    - light.ljusstake_kok
+    - light.ljusstake_taghus
+
+    ### Switches ###
+- platform: switch
+  name: Ljusstake tåghus
+  entity_id: switch.on_off_plug_in_unit_6
+
+- platform: switch
+  name: Ljusstake kök
+  entity_id: switch.on_off_plug_in_unit_7

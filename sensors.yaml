@@ -342,10 +342,10 @@
     #Sidebar active
     sidebar_active:
       value_template: >
-        {% set lights = [states.light.bedroom_lamp_samuel, states.light.dining_room_wall_light, states.light.downstairs_lights, states.light.kitchen_window, states.light.living_room_front, states.light.living_room_side, states.light.office_wall_lights, states.light.server_corner, states.light.tv_room_led_slinga] %}
+        {% set lights = [states.light.color_temperature_light_3, states.light.dining_room_wall_light, states.light.color_temperature_light_4, states.light.color_temperature_light_5, states.light.dimmable_light_8, states.light.office_wall_lights, states.light.color_temperature_light_2, states.light.tv_room_led_slinga] %}
         {% set lights_on = lights | selectattr('state','eq','on') | list %}
         {% set lights_name = lights | selectattr('state','eq','on') | map(attribute='name') | join(', ') %}
-        {% set switches = [states.switch.tradfri_outlet, states.switch.tradfri_outlet_2] %}
+        {% set switches = [] %}
         {% set switches_on = switches | selectattr('state','eq','on') | list %} 
         {% set switches_name = switches | selectattr('state','eq','on') | map(attribute='name') | join(', ') %}
         {% if (lights_on | length == 0) and (switches_on | length > 0) %} 
