@@ -568,7 +568,7 @@
         state_attr('sensor.esxi_vmhost_esxi01_man_st_lan', 'memtotal_gb') * 100) | round(1) | default(0) }}
 
     esxi_disk_free_total:
-      friendly_name: ESXi host disk användning
+      friendly_name: ESXi host disk ledigt
       icon_template: mdi:harddisk
       value_template: >
         {{ (float(states('sensor.esxi_datastore_media_a')) + float(states('sensor.esxi_datastore_media_b'))) | round(2)}}
