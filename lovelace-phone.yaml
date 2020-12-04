@@ -136,15 +136,26 @@ views:
                   width: 47.7%
                 template: media
 
+              ##########################################################################
+              #                                                                        #
+              #                             * VARDAGSRUM *                             #
+              #                                                                        #
+              ##########################################################################
+
           - type: grid
-            columns: 3
+            columns: 2
+            title: Vardagsrum
             cards:
+              #################################################
+              #                                               #
+              #                   BELYSNING                   #
+              #                                               #
+              #################################################
+
               - type: custom:button-card
                 entity: light.living_room_lights
-                name: Vardagsrum fönsterlampor
+                name: Fönsterlampor
                 style:
-                  top: 23.9%
-                  left: 23.8%
                   width: 47.7%
                 custom_fields:
                   icon_lamp: &icon_lamp >
@@ -157,20 +168,55 @@ views:
                     icon_lamp:
                       [top: 11%, left: 4.5%, width: 10.05vw, position: absolute]
                 template: light
+
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.julbelysning
+                    state: "on"
+                card:
+                  type: custom:button-card
+                  entity: light.ljusstake_vardagsrum
+                  name: Adventsljusstake
+                  style:
+                    width: 47.7%
+                  custom_fields:
+                    icon_lamp: *icon_lamp
+                  styles: *icon_lamp_styles
+                  template: light
+
               - type: custom:button-card
                 entity: sensor.tunex_b301_temp
                 name: Vardagsrum
+                style:
+                  width: 47.7%
                 custom_fields:
                   icon_lamp: >
-                    <ha-icon icon="mdi:fireplace-off"></ha-icon>
+                    <ha-icon icon="mdi:thermometer"></ha-icon>
                 styles: *icon_lamp_styles
                 template: base
                 tap-action:
                   action: more-info
 
+          ##########################################################################
+          #                                                                        #
+          #                             * KÖK *                                    #
+          #                                                                        #
+          ##########################################################################
+          - type: grid
+            columns: 2
+            title: Kök
+            cards:
+              #################################################
+              #                                               #
+              #                   BELYSNING                   #
+              #                                               #
+              #################################################
+
               - type: custom:button-card
-                entity: light.kitchen_room_lights
-                name: Kökslampor
+                entity: light.dimmable_light_8
+                name: Köksfönster
+                style:
+                  width: 47.7%
                 custom_fields:
                   icon_lamp: *icon_lamp
                 styles: *icon_lamp_styles
@@ -178,29 +224,37 @@ views:
 
               - type: custom:button-card
                 entity: light.dining_room_wall_light
-                name: Matsal vägglampor
+                name: Matsal vägg
+                style:
+                  width: 47.7%
                 custom_fields:
                   icon_lamp: *icon_lamp
                 styles: *icon_lamp_styles
                 template: light
 
-              - type: custom:button-card
-                entity: sensor.tunex_e001_temp
-                name: Kylskåp
-                custom_fields:
-                  icon_lamp: >
-                    <ha-icon icon="mdi:fridge"></ha-icon>
-                styles: *icon_lamp_styles
-                template: base
-                tap-action:
-                  action: more-info
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.julbelysning
+                    state: "on"
+                card:
+                  type: custom:button-card
+                  entity: switch.on_off_plug_in_unit_7
+                  name: Adventsljusstake
+                  style:
+                    width: 47.7%
+                  custom_fields:
+                    icon_lamp: *icon_lamp
+                  styles: *icon_lamp_styles
+                  template: light
 
               - type: custom:button-card
                 entity: sensor.kitchen
                 name: Kök
+                style:
+                  width: 47.7%
                 custom_fields:
                   icon_lamp: >
-                    <ha-icon icon="mdi:stove"></ha-icon>
+                    <ha-icon icon="mdi:thermometer"></ha-icon>
                 styles: *icon_lamp_styles
                 template: base
                 tap-action:
@@ -209,86 +263,145 @@ views:
               - type: custom:button-card
                 entity: sensor.dining_room
                 name: Matsal
-                custom_fields:
-                  icon_lamp: >
-                    <ha-icon icon="mdi:table-furniture"></ha-icon>
-                styles: *icon_lamp_styles
-                template: base
-                tap-action:
-                  action: more-info
-
-          - type: grid
-            columns: 3
-            cards:
-              #################################################
-              #                                               #
-              #                  SÄNGLAMPOR                   #
-              #                                               #
-              #################################################
-
-              - type: custom:button-card
-                entity: light.bedroom_lamp_samuel
-                name: Sänglampa
-                custom_fields:
-                  icon_lamp: *icon_lamp
-                styles: *icon_lamp_styles
-                template: light
-
-              - type: custom:button-card
-                entity: sensor.bedroom
-                name: Sovrum
-                custom_fields:
-                  icon_lamp: >
-                    <ha-icon icon="mdi:bed"></ha-icon>
-                styles: *icon_lamp_styles
-                template: base
-                tap-action:
-                  action: more-info
-
-              #################################################
-              #                                               #
-              #                  LED-SLINGA                   #
-              #                                               #
-              #################################################
-
-              - type: custom:button-card
-                entity: light.tv_room_led_slinga
-                name: TV-rum LED-slinga
-                custom_fields:
-                  icon_lamp: >
-                    <ha-icon icon="mdi:led-variant-outline"></ha-icon>
-                styles: *icon_lamp_styles
-                template: light
-
-              #################################################
-              #                                               #
-              #                  Vägg-lampor                   #
-              #                                               #
-              #################################################
-
-              - type: custom:button-card
-                entity: light.office_wall_lights
-                name: Kontor vägglampor
-                custom_fields:
-                  icon_lamp: *icon_lamp
-                styles: *icon_lamp_styles
-                template: light
-              #################################################
-              #                                               #
-              #                   Temperatur                  #
-              #                                               #
-              #################################################
-
-              - type: custom:button-card
-                entity: sensor.tunex_2801_temp
-                name: "Kontor"
+                style:
+                  width: 47.7%
                 custom_fields:
                   icon_lamp: >
                     <ha-icon icon="mdi:thermometer"></ha-icon>
                 styles: *icon_lamp_styles
                 template: base
                 tap-action:
-                  action: none
+                  action: more-info
+
+              - type: custom:button-card
+                entity: sensor.tunex_e001_temp
+                name: Kylskåp
+                style:
+                  width: 47.7%
+                custom_fields:
+                  icon_lamp: >
+                    <ha-icon icon="mdi:fridge"></ha-icon>
+                styles: *icon_lamp_styles
+                template: base
+                tap-action:
+                  action: more-info
+
+          ##########################################################################
+          #                                                                        #
+          #                             Kontor                                     #
+          #                                                                        #
+          ##########################################################################
+          - type: grid
+            columns: 2
+            title: Kontor
+            cards:
+              #################################################
+              #                                               #
+              #                   BELYSNING                   #
+              #                                               #
+              #################################################
+
+              - type: custom:button-card
+                entity: light.office_wall_lights
+                name: Vägglampor
+                style:
+                  width: 47.7%
+                custom_fields:
+                  icon_lamp: *icon_lamp
+                styles: *icon_lamp_styles
+                template: light
+
+              - type: custom:button-card
+                entity: sensor.tunex_2801_temp
+                name: Kontor
+                style:
+                  width: 47.7%
+                custom_fields:
+                  icon_lamp: >
+                    <ha-icon icon="mdi:thermometer"></ha-icon>
+                styles: *icon_lamp_styles
+                template: base
+                tap-action:
+                  action: more-info
+
+          ##########################################################################
+          #                                                                        #
+          #                             TV-rum                                     #
+          #                                                                        #
+          ##########################################################################
+          - type: grid
+            columns: 2
+            title: TV-rum
+            cards:
+              #################################################
+              #                                               #
+              #                   BELYSNING                   #
+              #                                               #
+              #################################################
+
+              - type: custom:button-card
+                entity: light.tv_room_led_slinga
+                name: LED-slinga
+                style:
+                  width: 47.7%
+                custom_fields:
+                  icon_lamp: *icon_lamp
+                styles: *icon_lamp_styles
+                template: light
+
+          ##########################################################################
+          #                                                                        #
+          #                             Sovrum                                     #
+          #                                                                        #
+          ##########################################################################
+          - type: grid
+            columns: 2
+            title: Sovrum
+            cards:
+              #################################################
+              #                                               #
+              #                   BELYSNING                   #
+              #                                               #
+              #################################################
+
+              - type: custom:button-card
+                entity: light.color_temperature_light_3
+                name: Sänglampa Samuel
+                style:
+                  width: 47.7%
+                custom_fields:
+                  icon_lamp: *icon_lamp
+                styles: *icon_lamp_styles
+                template: light
+
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.julbelysning
+                    state: "on"
+                card:
+                  type: custom:button-card
+                  entity: light.sovrum_fonster
+                  name: Stjärna i fönstret
+                  style:
+                    width: 47.7%
+                  custom_fields:
+                    icon_lamp: >
+                      <ha-icon icon="mdi:hexagram-outline"></ha-icon>
+                  styles: *icon_lamp_styles
+                  template: light
+
+              - type: custom:button-card
+                entity: sensor.bedroom
+                name: Sovrum
+                style:
+                  width: 47.7%
+                custom_fields:
+                  icon_lamp: >
+                    <ha-icon icon="mdi:thermometer"></ha-icon>
+                styles: *icon_lamp_styles
+                template: base
+                tap-action:
+                  action: more-info
 
       - type: horizontal-stack
         cards:
