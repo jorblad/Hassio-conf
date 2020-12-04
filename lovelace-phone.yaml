@@ -62,7 +62,7 @@ views:
           #style:
           #top: 23.9%
           #left: 76.2%
-          #width: 47.7%
+          #width: 42.7%
           #tap_action: !include popup/hemma_sanja.yaml
           #hold_action: !include popup/hemma_sanja.yaml
           #template: person
@@ -111,7 +111,7 @@ views:
                 style:
                   top: 23.9%
                   left: 23.8%
-                  width: 47.7%
+                  width: 42.7%
                 template: media
               - type: "custom:button-card"
                 entity: media_player.spotify_samuel_sjobergsson
@@ -122,7 +122,7 @@ views:
                 style:
                   top: 23.9%
                   left: 76.2%
-                  width: 47.7%
+                  width: 42.7%
                 template: media
               - type: "custom:button-card"
                 entity: media_player.tv
@@ -133,7 +133,7 @@ views:
                 style:
                   top: 76.2%
                   left: 23.8%
-                  width: 47.7%
+                  width: 42.7%
                 template: media
 
               ##########################################################################
@@ -156,7 +156,7 @@ views:
                 entity: light.living_room_lights
                 name: Fönsterlampor
                 style:
-                  width: 47.7%
+                  width: 42.7%
                 custom_fields:
                   icon_lamp: &icon_lamp >
                     [[[ const state = entity.state === 'on' ? 'animate' : null; 
@@ -178,7 +178,7 @@ views:
                   entity: light.ljusstake_vardagsrum
                   name: Adventsljusstake
                   style:
-                    width: 47.7%
+                    width: 42.7%
                   custom_fields:
                     icon_lamp: *icon_lamp
                   styles: *icon_lamp_styles
@@ -188,7 +188,7 @@ views:
                 entity: sensor.tunex_b301_temp
                 name: Vardagsrum
                 style:
-                  width: 47.7%
+                  width: 42.7%
                 custom_fields:
                   icon_lamp: >
                     <ha-icon icon="mdi:thermometer"></ha-icon>
@@ -216,7 +216,7 @@ views:
                 entity: light.dimmable_light_8
                 name: Köksfönster
                 style:
-                  width: 47.7%
+                  width: 43.7%
                 custom_fields:
                   icon_lamp: *icon_lamp
                 styles: *icon_lamp_styles
@@ -226,7 +226,7 @@ views:
                 entity: light.dining_room_wall_light
                 name: Matsal vägg
                 style:
-                  width: 47.7%
+                  width: 42.7%
                 custom_fields:
                   icon_lamp: *icon_lamp
                 styles: *icon_lamp_styles
@@ -241,7 +241,7 @@ views:
                   entity: switch.on_off_plug_in_unit_7
                   name: Adventsljusstake
                   style:
-                    width: 47.7%
+                    width: 42.7%
                   custom_fields:
                     icon_lamp: *icon_lamp
                   styles: *icon_lamp_styles
@@ -251,7 +251,7 @@ views:
                 entity: sensor.kitchen
                 name: Kök
                 style:
-                  width: 47.7%
+                  width: 42.7%
                 custom_fields:
                   icon_lamp: >
                     <ha-icon icon="mdi:thermometer"></ha-icon>
@@ -264,7 +264,7 @@ views:
                 entity: sensor.dining_room
                 name: Matsal
                 style:
-                  width: 47.7%
+                  width: 42.7%
                 custom_fields:
                   icon_lamp: >
                     <ha-icon icon="mdi:thermometer"></ha-icon>
@@ -277,7 +277,7 @@ views:
                 entity: sensor.tunex_e001_temp
                 name: Kylskåp
                 style:
-                  width: 47.7%
+                  width: 42.7%
                 custom_fields:
                   icon_lamp: >
                     <ha-icon icon="mdi:fridge"></ha-icon>
@@ -305,7 +305,7 @@ views:
                 entity: light.office_wall_lights
                 name: Vägglampor
                 style:
-                  width: 47.7%
+                  width: 42.7%
                 custom_fields:
                   icon_lamp: *icon_lamp
                 styles: *icon_lamp_styles
@@ -315,7 +315,7 @@ views:
                 entity: sensor.tunex_2801_temp
                 name: Kontor
                 style:
-                  width: 47.7%
+                  width: 42.7%
                 custom_fields:
                   icon_lamp: >
                     <ha-icon icon="mdi:thermometer"></ha-icon>
@@ -343,7 +343,7 @@ views:
                 entity: light.tv_room_led_slinga
                 name: LED-slinga
                 style:
-                  width: 47.7%
+                  width: 42.7%
                 custom_fields:
                   icon_lamp: *icon_lamp
                 styles: *icon_lamp_styles
@@ -368,7 +368,7 @@ views:
                 entity: light.color_temperature_light_3
                 name: Sänglampa Samuel
                 style:
-                  width: 47.7%
+                  width: 42.7%
                 custom_fields:
                   icon_lamp: *icon_lamp
                 styles: *icon_lamp_styles
@@ -383,7 +383,7 @@ views:
                   entity: light.sovrum_fonster
                   name: Stjärna i fönstret
                   style:
-                    width: 47.7%
+                    width: 42.7%
                   custom_fields:
                     icon_lamp: >
                       <ha-icon icon="mdi:hexagram-outline"></ha-icon>
@@ -394,7 +394,7 @@ views:
                 entity: sensor.bedroom
                 name: Sovrum
                 style:
-                  width: 47.7%
+                  width: 42.7%
                 custom_fields:
                   icon_lamp: >
                     <ha-icon icon="mdi:thermometer"></ha-icon>
