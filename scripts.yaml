@@ -57,11 +57,7 @@ lights_at_dark:
             - service: light.turn_on
               entity_id: light.upstairs_lights
             - service: light.turn_on
-              entity_id: light.sovrum_fonster
-            - service: light.turn_on
-              entity_id: light.ljusstake_vardagsrum
-            - service: switch.turn_on
-              entity_id:  switch.on_off_plug_in_unit_7
+              entity_id: light.christmas_lights
         #Någon hemma och inte jul
         - conditions:
             - condition: state
@@ -87,11 +83,7 @@ lights_at_dark:
             - service: light.turn_on
               entity_id: light.downstairs_lights
             - service: light.turn_on
-              entity_id: light.sovrum_fonster
-            - service: light.turn_on
-              entity_id: light.ljusstake_vardagsrum
-            - service: switch.turn_on
-              entity_id:  switch.on_off_plug_in_unit_7
+              entity_id: light.christmas_lights
     - service: light.turn_on
       data:
         entity_id: light.downstairs_light
@@ -134,12 +126,7 @@ lights_at_sunrise:
             - service: light.turn_off
               entity_id: light.upstairs_lights
             - service: light.turn_off
-              entity_id: light.sovrum_fonster
-            - service: light.turn_off
-              entity_id: light.ljusstake_vardagsrum
-            - service: switch.turn_off
-              entity_id:  switch.on_off_plug_in_unit_7
-        #Någon hemma och inte jul
+              entity_id: light.christmas_lights
         - conditions:
             - condition: state
               entity_id: sensor.tpl_occupancy
@@ -162,12 +149,12 @@ lights_at_sunrise:
             - service: light.turn_off
               entity_id: light.downstairs_lights
             - service: light.turn_off
-              entity_id: light.sovrum_fonster
-            - service: light.turn_off
-              entity_id: light.ljusstake_vardagsrum
-            - service: switch.turn_off
-              entity_id: switch.on_off_plug_in_unit_7
+              entity_id: light.christmas_lights
   mode: single
+
+##########################################
+##             Morning                  ##
+##########################################
 morning_samuel:
   alias: Morning-samuel
   sequence:
