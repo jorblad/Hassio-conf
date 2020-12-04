@@ -29,7 +29,7 @@ views:
   - title: Hem
     path: hem
     icon: "mdi:home"
-    theme: tablet
+    theme: phone
     cards:
       - type: custom:layout-card
         layout: vertical
