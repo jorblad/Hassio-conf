@@ -168,6 +168,8 @@ morning_samuel:
         entity_id: light.color_temperature_light_3
     - service: light.turn_on
       entity_id: light.sovrum_fonster
+      data:
+        entity_id: light.sovrum_fonster
   mode: single
 night:
   alias: Night

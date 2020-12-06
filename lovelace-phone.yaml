@@ -23,7 +23,7 @@ anchors:
     max-width: 1px
     cursor: default
 
-button_card_templates: !include button_card_templates.yaml
+button_card_templates: !include button_card_templates_phone.yaml
 
 views:
   - title: Hem
