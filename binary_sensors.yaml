@@ -48,7 +48,7 @@
     #Sidebar
     sidebar_show_quote_of_the_day:
       value_template: >
-        {% set x = states('sensor.sidebar_dagenscitat') %}
+        {% set x = states('sensor.sidebar_temadagar') %}
         {% if x | length < 100 %}
           on
         {% else %}
