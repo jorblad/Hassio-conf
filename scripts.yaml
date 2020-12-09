@@ -1,226 +1,204 @@
 home_leave:
   alias: Lämnar hemmet
   sequence:
-    - service: light.turn_off
-      entity_id: light.upstairs_lights
-    - service: remote.turn_off
-      entity_id: remote.harmony_hub
+  - service: light.turn_off
+    entity_id: light.upstairs_lights
+  - service: remote.turn_off
+    entity_id: remote.harmony_hub
   mode: single
 home_arrive:
   alias: Kommer hem
   sequence:
-    - condition: state
-      entity_id: binary_sensor.daylight
-      state: "off"
-    - service: light.turn_on
-      data:
-        profile: relax
-        brightness: 50
-        entity_id: light.upstairs_lights
+  - condition: state
+    entity_id: binary_sensor.daylight
+    state: 'off'
+  - service: light.turn_on
+    data:
+      profile: relax
+      brightness: 50
+      entity_id: light.upstairs_lights
   mode: single
-
-##########################################
-## Turn on lights at sunset             ##
-##########################################
-
 lights_at_dark:
   alias: lights_at_dark
   sequence:
-    - choose:
-        - conditions:
-            #Ingen hemma och inte jul
-            - condition: state
-              entity_id: sensor.tpl_occupancy
-              state: "False"
-            - condition: state
-              entity_id: input_boolean.julbelysning
-              state: "False"
-          sequence:
-            - service: light.turn_on
-              entity_id: light.downstairs_lights
-        #Ingen hemma men jul
-        - conditions:
-            - condition: state
-              entity_id: sensor.tpl_occupancy
-              state: "False"
-            - condition: state
-              entity_id: input_boolean.julbelysning
-              state: "True"
-          sequence:
-            - service: light.turn_on
-              data:
-                entity_id: light.living_room_lights
-                brightness: 84
-                color_temp: 400
-            - service: light.turn_on
-              entity_id: light.dining_room_wall_light
-            - service: light.turn_on
-              entity_id: light.upstairs_lights
-            - service: light.turn_on
-              entity_id: light.christmas_lights
-        #Någon hemma och inte jul
-        - conditions:
-            - condition: state
-              entity_id: sensor.tpl_occupancy
-              state: "True"
-            - condition: state
-              entity_id: input_boolean.julbelysning
-              state: "False"
-          sequence:
-            - service: light.turn_on
-              entity_id: light.downstairs_lights
-            - service: light.turn_on
-              entity_id: light.upstairs_lights
-        #Någon hemma och jul
-        - conditions:
-            - condition: state
-              entity_id: sensor.tpl_occupancy
-              state: "True"
-            - condition: state
-              entity_id: input_boolean.julbelysning
-              state: "True"
-          sequence:
-            - service: light.turn_on
-              entity_id: light.downstairs_lights
-            - service: light.turn_on
-              entity_id: light.christmas_lights
-    - service: light.turn_on
-      data:
-        entity_id: light.downstairs_light
-    - service: script.turn_on
-      data:
-        entity_id: script.home_arrive
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: sensor.tpl_occupancy
+        state: 'False'
+      - condition: state
+        entity_id: input_boolean.julbelysning
+        state: 'False'
+      sequence:
+      - service: light.turn_on
+        entity_id: light.downstairs_lights
+    - conditions:
+      - condition: state
+        entity_id: sensor.tpl_occupancy
+        state: 'False'
+      - condition: state
+        entity_id: input_boolean.julbelysning
+        state: 'True'
+      sequence:
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_lights
+          brightness: 84
+          color_temp: 400
+      - service: light.turn_on
+        entity_id: light.dining_room_wall_light
+      - service: light.turn_on
+        entity_id: light.upstairs_lights
+      - service: light.turn_on
+        entity_id: light.christmas_lights
+    - conditions:
+      - condition: state
+        entity_id: sensor.tpl_occupancy
+        state: 'True'
+      - condition: state
+        entity_id: input_boolean.julbelysning
+        state: 'False'
+      sequence:
+      - service: light.turn_on
+        entity_id: light.downstairs_lights
+      - service: light.turn_on
+        entity_id: light.upstairs_lights
+    - conditions:
+      - condition: state
+        entity_id: sensor.tpl_occupancy
+        state: 'True'
+      - condition: state
+        entity_id: input_boolean.julbelysning
+        state: 'True'
+      sequence:
+      - service: light.turn_on
+        entity_id: light.downstairs_lights
+      - service: light.turn_on
+        entity_id: light.christmas_lights
+  - service: light.turn_on
+    data:
+      entity_id: light.downstairs_light
+  - service: script.turn_on
+    data:
+      entity_id: script.home_arrive
   mode: single
-##########################################
-## Turn off lights at sunrise           ##
-##########################################
-
 lights_at_sunrise:
   alias: lights_at_sunrise
   sequence:
-    - choose:
-        - conditions:
-            #Ingen hemma och inte jul
-            - condition: state
-              entity_id: sensor.tpl_occupancy
-              state: "False"
-            - condition: state
-              entity_id: input_boolean.julbelysning
-              state: "False"
-          sequence:
-            - service: light.turn_off
-              entity_id: light.downstairs_lights
-            - service: light.turn_off
-              entity_id: light.upstairs_lights
-        #Ingen hemma men jul
-        - conditions:
-            - condition: state
-              entity_id: sensor.tpl_occupancy
-              state: "False"
-            - condition: state
-              entity_id: input_boolean.julbelysning
-              state: "True"
-          sequence:
-            - service: light.turn_off
-              entity_id: light.downstairs_lights
-            - service: light.turn_off
-              entity_id: light.upstairs_lights
-            - service: light.turn_off
-              entity_id: light.christmas_lights
-        - conditions:
-            - condition: state
-              entity_id: sensor.tpl_occupancy
-              state: "True"
-            - condition: state
-              entity_id: input_boolean.julbelysning
-              state: "False"
-          sequence:
-            - service: light.turn_off
-              entity_id: light.downstairs_lights
-        #Någon hemma och jul
-        - conditions:
-            - condition: state
-              entity_id: sensor.tpl_occupancy
-              state: "True"
-            - condition: state
-              entity_id: input_boolean.julbelysning
-              state: "True"
-          sequence:
-            - service: light.turn_off
-              entity_id: light.downstairs_lights
-            - service: light.turn_off
-              entity_id: light.christmas_lights
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: sensor.tpl_occupancy
+        state: 'False'
+      - condition: state
+        entity_id: input_boolean.julbelysning
+        state: 'False'
+      sequence:
+      - service: light.turn_off
+        entity_id: light.downstairs_lights
+      - service: light.turn_off
+        entity_id: light.upstairs_lights
+    - conditions:
+      - condition: state
+        entity_id: sensor.tpl_occupancy
+        state: 'False'
+      - condition: state
+        entity_id: input_boolean.julbelysning
+        state: 'True'
+      sequence:
+      - service: light.turn_off
+        entity_id: light.downstairs_lights
+      - service: light.turn_off
+        entity_id: light.upstairs_lights
+      - service: light.turn_off
+        entity_id: light.christmas_lights
+    - conditions:
+      - condition: state
+        entity_id: sensor.tpl_occupancy
+        state: 'True'
+      - condition: state
+        entity_id: input_boolean.julbelysning
+        state: 'False'
+      sequence:
+      - service: light.turn_off
+        entity_id: light.downstairs_lights
+    - conditions:
+      - condition: state
+        entity_id: sensor.tpl_occupancy
+        state: 'True'
+      - condition: state
+        entity_id: input_boolean.julbelysning
+        state: 'True'
+      sequence:
+      - service: light.turn_off
+        entity_id: light.downstairs_lights
+      - service: light.turn_off
+        entity_id: light.christmas_lights
   mode: single
-
-##########################################
-##             Morning                  ##
-##########################################
 morning_samuel:
   alias: Morning-samuel
   sequence:
-    - service: input_boolean.turn_off
-      entity_id: input_boolean.samuel_sleeping
-    - service: light.turn_on
-      data:
-        transition: 60
-        profile: energize
-        brightness: 80
-        entity_id: light.color_temperature_light_3
-    - service: light.turn_on
-      entity_id: light.sovrum_fonster
-      data:
-        entity_id: light.sovrum_fonster
+  - service: input_boolean.turn_off
+    entity_id: input_boolean.samuel_sleeping
+  - service: light.turn_on
+    entity_id: light.sovrum_fonster
+  - service: light.turn_on
+    data:
+      transition: 60
+      profile: energize
+      brightness: 80
+      entity_id: light.color_temperature_light_3
   mode: single
 night:
   alias: Night
   sequence:
-    - service: input_boolean.turn_on
-      entity_id: input_boolean.samuel_sleeping
-    - service: light.turn_off
-      entity_id: light.color_temperature_light_3
-    - service: light.turn_off
-      entity_id: light.sovrum_fonster
-    - condition: state
-      entity_id: input_boolean.guest_mode
-      state: "off"
-    - service: media_player.media_pause
-      entity_id: media_player.spotify_samuel_sjobergsson
-    - service: remote.turn_off
-      entity_id: remote.harmony_hub
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.samuel_sleeping
+  - service: light.turn_off
+    entity_id: light.color_temperature_light_3
+  - service: light.turn_off
+    entity_id: light.sovrum_fonster
+  - condition: state
+    entity_id: input_boolean.guest_mode
+    state: 'off'
+  - service: media_player.media_pause
+    entity_id: media_player.spotify_samuel_sjobergsson
+  - service: remote.turn_off
+    entity_id: remote.harmony_hub
   mode: single
 samuel_find_my_oneplus:
   alias: Samuel find my oneplus
   sequence:
-    - repeat:
-        count: 3
-        sequence:
-          - service: notify.mobile_app_samuels_oneplus
-            data:
-              title: Hitta min oneplus
-              message: Här är jag
-              data:
-                push:
-                  sound:
-                    name: Ringtone_UK_Haptic.caf
-                    critical: 1
-                    volume: 1.0
-                    priority: high
-                    channel: alarm_stream
-          - delay:
-              seconds: 4
+  - repeat:
+      count: 3
+      sequence:
+      - service: notify.mobile_app_samuels_oneplus
+        data:
+          title: Hitta min oneplus
+          message: Här är jag
+          data:
+            push:
+              sound:
+                name: Ringtone_UK_Haptic.caf
+                critical: 1
+                volume: 1.0
+                priority: high
+                channel: alarm_stream
+      - delay:
+          seconds: 4
 playing_music_tv_rum:
   alias: Playing music TV-rum
   sequence:
-    - service: remote.turn_on
-      data:
-        entity_id: remote.harmony_hub
-        activity: Watch Smart TV
+  - service: remote.turn_on
+    data:
       entity_id: remote.harmony_hub
-    - service: spotcast.start
-      data:
-        entity_id: media_player.tv
-    - service: media_player.media_play
-      data:
-        entity_id: media_player.spotify_samuel_sjobergsson
+      activity: Watch Smart TV
+    entity_id: remote.harmony_hub
+  - service: spotcast.start
+    data:
+      entity_id: media_player.tv
+  - service: media_player.media_play
+    data:
+      entity_id: media_player.spotify_samuel_sjobergsson
   mode: single
   icon: mdi:spotify
