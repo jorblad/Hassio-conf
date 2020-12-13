@@ -16,7 +16,7 @@ home_arrive:
               state: "off"
             - condition: state
               entity_id: input_boolean.julbelysning
-              state: "False"
+              state: "off"
           sequence:
             - service: light.turn_on
               data:
@@ -29,15 +29,16 @@ home_arrive:
               state: "off"
             - condition: state
               entity_id: input_boolean.julbelysning
-              state: "True"
+              state: "on"
           sequence:
+            - service: light.turn_on
+              entity_id: light.sovrum_fonster
             - service: light.turn_on
               data:
                 profile: relax
                 brightness: 50
                 entity_id: light.upstairs_lights
-            - service: light.turn_on
-              entity_id: light.sovrum_fonster
+
   mode: single
 lights_at_dark:
   alias: lights_at_dark
