@@ -10,6 +10,10 @@ homeassistant:
 
 readme:
 
+folder_watcher:
+  - folder: /config
+
+
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 frontend:
