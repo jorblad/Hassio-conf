@@ -2,27 +2,21 @@
   automatic_add: true
   devices:
     newkaku_01718f56_10:
-      id: Ljusstake_Vardagsrum
       name: Ljusstake Vardagsrum
       type: switchable
     newkaku_0171856_e:
-      id: TV-room_LED_slinga
       name: TV-room LED slinga
       type: dimmable
     newkaku_0171856_f:
-      id: lampa_2
       name: Lampa 2
       type: switchable
     newkaku_01318b56_f:
-      id: Dining_room_wall_light
       name: Dining room wall light
       type: switchable
     newkaku_01318b56_10:
-      id: sovrum_fonster
       name: Sovrum fönster
       type: switchable
     newkaku_01318b56_e:
-      id: office_wall_lights
       name: Office wall lights
       type: switchable
 - platform: group
