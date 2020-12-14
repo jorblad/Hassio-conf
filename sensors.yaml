@@ -524,6 +524,9 @@
     sun_elevation:
       value_template: "{{ states.sun.sun.attributes.elevation }}"
 
+    weather_cloudiness:
+      value_template: "{{ state_attr('weather.smhi_smedsas_skogslund', 'cloudiness') }}"
+
     ####################################################
     #                                                  #
     #                     System                       #
