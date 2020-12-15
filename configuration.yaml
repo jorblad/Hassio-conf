@@ -22,6 +22,11 @@ zoneminder:
 camera:
   - platform: zoneminder
 
+switch:
+  - platform: zoneminder
+    command_on: Modect
+    command_off: Monitor
+
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 frontend:
