@@ -185,6 +185,10 @@
   select: "bibel_ord"
   scan_interval: 7200
 
+#Zoneminder
+- platform: zoneminder
+  include_archived: false
+
 #Greenely
 - platform: greenely
   email: !secret greenely_email

@@ -13,6 +13,14 @@ readme:
 folder_watcher:
   - folder: /config
 
+zoneminder:
+  - host: !secret ZM_HOST
+    ssl: false
+    username: !secret ZM_USERNAME
+    password: !secret ZM_PASSWORD
+
+camera:
+  - platform: zoneminder
 
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
@@ -36,7 +44,7 @@ lovelace:
       icon: mdi:tablet
       show_in_sidebar: true
       filename: lovelace-tablet.yaml
-      
+
     lovelace-phone:
       mode: yaml
       title: Lovelace-phone
@@ -200,7 +208,6 @@ browser_mod:
 alarm_control_panel:
   - platform: manual
     code: !secret alarm_code
-
 
 #Emulated hue
 emulated_hue:
