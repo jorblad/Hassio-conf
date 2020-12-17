@@ -149,7 +149,7 @@ views:
                     style:
                       {
                         top: 18%,
-                        left: 10.7%,
+                        left: 50%,
                         height: 1px,
                         max-height: 4vw,
                         width: 17.5vw,
