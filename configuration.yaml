@@ -16,6 +16,7 @@ folder_watcher:
 zoneminder:
   - host: !secret ZM_HOST
     ssl: false
+    path_zms: /cgi-bin/nph-zms
     username: !secret ZM_USERNAME
     password: !secret ZM_PASSWORD
 

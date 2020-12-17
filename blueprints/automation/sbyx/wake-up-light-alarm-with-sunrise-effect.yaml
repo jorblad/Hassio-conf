@@ -21,8 +21,9 @@ blueprint:
           device_class: timestamp
     sunrise_duration:
       name: Sunrise duration
-      description: 'The sunrise will start the configured number of minutes before
-        the timestamp. (suggestion: 25)'
+      description: The sunrise will start the configured number of minutes before
+        the timestamp.
+      default: 25
       selector:
         number:
           min: 5.0
@@ -30,31 +31,42 @@ blueprint:
           step: 5.0
           unit_of_measurement: min
           mode: slider
+    max_brightness:
+      name: Maximum brightness
+      description: The brightness will be transitioned from 1% to the configured percentage.
+      default: 100
+      selector:
+        number:
+          min: 5.0
+          max: 100.0
+          step: 1.0
+          unit_of_measurement: '%'
+          mode: slider
     pre_sunrise_actions:
       name: Pre-sunrise actions
       description: Actions to run before sunrise starts (set e.g. a Delay with value
         00:00:00 if you don't want to do anything)
       selector:
         action: {}
-  source_url: https://community.home-assistant.io/t/wake-up-light-alarm-with-sunrise-effect/255193/3
+  source_url: https://gist.github.com/sbyx/96c43b13b90ae1c35b872313ba1d2d2d
 variables:
   light_entity: !input 'light_entity'
   timestamp_sensor: !input 'timestamp_sensor'
   sunrise_duration: !input 'sunrise_duration'
+  max_brightness: !input 'max_brightness'
   start_mired: '{{ state_attr(light_entity, ''max_mireds'') }}'
   end_mired: '{{ state_attr(light_entity, ''min_mireds'') }}'
+  tick_time: '{{ float(sunrise_duration) * 0.6 * (100 / float(max_brightness)) }}'
 trigger:
 - platform: time_pattern
   minutes: '*'
 condition: []
 action:
+- wait_template: '{{ as_timestamp(states(timestamp_sensor)) != None }}'
 - wait_template: '{{ 0 < as_timestamp(states(timestamp_sensor)) - as_timestamp(states(''sensor.date_time_iso''))
     < 60 * float(sunrise_duration) }}'
-- choose:
-  - conditions:
-    - condition: template
-      value_template: '{{ true }}'
-    sequence: !input 'pre_sunrise_actions'
+- choose: []
+  default: !input 'pre_sunrise_actions'
 - service: light.turn_on
   data:
     brightness_pct: 1
@@ -63,10 +75,12 @@ action:
 - repeat:
     while:
     - condition: template
+      value_template: '{{ as_timestamp(states(timestamp_sensor)) != None }}'
+    - condition: template
       value_template: '{{ 0 < as_timestamp(states(timestamp_sensor)) - as_timestamp(states(''sensor.date_time_iso''))
         < 60 * float(sunrise_duration) }}'
     sequence:
-    - delay: 00:00:05
+    - delay: '{{ tick_time }}'
     - choose:
       - conditions:
         - condition: state
@@ -75,11 +89,13 @@ action:
         sequence:
         - service: light.turn_on
           data:
-            brightness_pct: '{{ (100 - (100 * (as_timestamp(states(timestamp_sensor))
-              - as_timestamp(now())) / (float(sunrise_duration) * 60))) | int }}'
+            brightness_pct: '{{ (float(max_brightness) - (float(max_brightness) *
+              (as_timestamp(states(timestamp_sensor)) - as_timestamp(now())) / (float(sunrise_duration)
+              * 60))) | int }}'
             color_temp: '{{ (float(end_mired) + (float(start_mired) - float(end_mired))
               * ((as_timestamp(states(timestamp_sensor)) - as_timestamp(now())) /
               (float(sunrise_duration) * 60))) | int }}'
+            transition: '{{ tick_time | int }}'
           entity_id: !input 'light_entity'
 mode: single
 max_exceeded: silent
