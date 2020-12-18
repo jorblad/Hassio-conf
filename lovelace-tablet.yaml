@@ -193,7 +193,7 @@ views:
                               height: 6vw,
                               margin-top: -0.5vw,
                               padding-bottppom: 1vw,
-                              margin-left: 138%,
+                              margin-left: 50%,
                               --mdc-ripple-press-opacity: 0,
                             ]
 
