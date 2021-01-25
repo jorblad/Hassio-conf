@@ -346,3 +346,25 @@
       addon: a0d7b954_ssh
       input: /config/ha_gitpush.sh
   mode: single
+- id: '1610455056480'
+  alias: Wake-up light alarm with sunrise effect
+  description: ''
+  use_blueprint:
+    path: sbyx/wake-up-light-alarm-with-sunrise-effect.yaml
+    input:
+      min_mired: '30'
+      light_entity: light.color_temperature_light_3
+      timestamp_sensor: sensor.samuels_oneplus_next_alarm
+      check_entity: person.samuel_sjobergsson
+      end_brightness: '254'
+      start_brightness: 40
+      pre_sunrise_actions: []
+- id: '1610455960957'
+  alias: Mute mediaplayer when calling.
+  description: ''
+  use_blueprint:
+    path: JackPoint/mute_media_player_on_call.yaml
+    input:
+      phone_state: sensor.oneplus_a6003_phone_state
+      person: person.samuel_sjobergsson
+      media_player: media_player.tv
