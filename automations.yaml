@@ -357,8 +357,17 @@
       timestamp_sensor: sensor.samuels_oneplus_next_alarm
       check_entity: person.samuel_sjobergsson
       end_brightness: '254'
-      start_brightness: 40
-      pre_sunrise_actions: []
+      start_brightness: '40'
+      pre_sunrise_actions:
+      - service: notify.mobile_app_samuels_oneplus
+        data:
+          title: Wake up
+          message: Wake up starts
+      post_sunrise_actions:
+      - service: notify.mobile_app_samuels_oneplus
+        data:
+          title: Wake up
+          message: Wake up ends
 - id: '1610455960957'
   alias: Mute mediaplayer when calling.
   description: ''
